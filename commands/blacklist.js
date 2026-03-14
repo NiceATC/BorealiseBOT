@@ -30,7 +30,7 @@ export default {
   minRole: "bouncer",
 
   async execute(ctx) {
-    const { args, reply, bot } = ctx;
+    const { args, reply, bot, api } = ctx;
     const action = (args[0] ?? "").toLowerCase();
 
     if (!action) {
@@ -61,6 +61,9 @@ export default {
         return;
       }
 
+      const currentId = bot.getCurrentTrackId();
+      const isCurrent = trackId === currentId;
+
       const existing = await getTrackBlacklist(trackId);
       if (existing) {
         await reply("Essa musica ja esta na blacklist.");
@@ -68,8 +71,8 @@ export default {
       }
 
       const { source, sourceId } = splitTrackId(trackId);
-      const title = bot._currentTrack?.title ?? null;
-      const artist = bot._currentTrack?.artist ?? null;
+      const title = isCurrent ? (bot._currentTrack?.title ?? null) : null;
+      const artist = isCurrent ? (bot._currentTrack?.artist ?? null) : null;
 
       await addTrackBlacklist({
         trackId,
@@ -79,6 +82,18 @@ export default {
         artist,
         addedAt: Date.now(),
       });
+
+      if (isCurrent) {
+        try {
+          await reply("Musica adicionada a blacklist. Pulando.");
+          await api.room.skipTrack(bot.cfg.room);
+        } catch (err) {
+          await reply(
+            `Musica adicionada a blacklist, mas nao consegui pular: ${err.message}`,
+          );
+        }
+        return;
+      }
 
       await reply("Musica adicionada a blacklist.");
       return;

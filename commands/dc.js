@@ -76,11 +76,8 @@ export default {
         if (position > maxPos) position = maxPos;
       }
 
-      await api.room.moveInWaitlist(
-        bot.cfg.room,
-        Number(user.userId),
-        position,
-      );
+      const apiPos = position - 1;
+      await api.room.moveInWaitlist(bot.cfg.room, Number(user.userId), apiPos);
       await reply(
         `Usuario ${user.displayName ?? user.username} movido para a posicao ${position}.`,
       );

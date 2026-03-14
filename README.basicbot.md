@@ -27,6 +27,13 @@ This file lists which basicBot commands and features are implemented in this pro
 | autowoot                     | Implemented as `!autowoot`.                                         |
 | welcome                      | Implemented as `!welcome`.                                          |
 | dclookup, dc                 | Implemented as `!dc` (10 min window).                               |
+| ba                           | Implemented as `!ba`.                                               |
+| 8ball, ask                   | Implemented as `!8ball` / `!ask`.                                   |
+| cookie                       | Implemented as `!cookie`.                                           |
+| ghostbuster                  | Implemented as `!ghostbuster`.                                      |
+| gif, giphy                   | Implemented as `!gif` / `!giphy`.                                   |
+| roulette, join, leave        | Implemented as `!roulette`, `!join`, `!leave` (chat-only).          |
+| thor                         | Implemented as `!thor`.                                             |
 | sessionstats, status, uptime | Partially covered by `!stats` (basic uptime + woots).               |
 
 ## Implemented features (from basicBot)
@@ -99,15 +106,7 @@ This file lists which basicBot commands and features are implemented in this pro
 
 ### Fun / misc
 
-- ba
-- 8ball, ask
-- cookie
-- ghostbuster
-- gif, giphy
-- roulette
-- join
-- leave
-- thor
+- none (all fun commands implemented)
 
 ### Script control (browser-only in basicBot)
 
@@ -125,3 +124,4 @@ This file lists which basicBot commands and features are implemented in this pro
   exposes a smaller `!stats` output.
 - BasicBot DC logic tracks per-user state in memory. BorealiseBOT restores from
   stored waitlist snapshots within a fixed window.
+- Roulette move o vencedor para uma posicao aleatoria na fila (se estiver na fila).
