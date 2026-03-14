@@ -30,12 +30,7 @@ export default {
     }
 
     const uptime = formatUptime(s.uptimeSec);
-    const r = s.reactions;
-    const parts = [
-      `⏱ Uptime: ${uptime}`,
-      `👍 Woots: ${s.wootCount}`,
-      `📊 Reações: ${r.woots}w / ${r.mehs}m / ${r.grabs}g`,
-    ];
+    const parts = [`⏱ Uptime: ${uptime}`, `👍 Woots dados: ${s.wootCount}`];
 
     if (s.waitlistPosition) {
       parts.push(`🎧 Fila: #${s.waitlistPosition}/${s.waitlistTotal ?? "?"}`);

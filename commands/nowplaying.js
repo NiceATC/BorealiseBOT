@@ -22,7 +22,7 @@ export default {
 
     const { title, artist } = state.currentTrack;
     const dj = state.djName ?? "?";
-    const r = state.reactions;
+    const r = state.currentTrackReactions;
     const parts = [`🎵 ${title}${artist ? ` — ${artist}` : ""}`, `DJ: ${dj}`];
 
     parts.push(`👍 ${r.woots}  👎 ${r.mehs}  🤘 ${r.grabs}`);
