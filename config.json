@@ -9,5 +9,13 @@
     "botMentionCooldownMs": 30000,
     "greetEnabled": true,
     "greetMessage": "🎵 Bem-vindo(a) à sala, @{name}!",
-    "greetCooldownMs": 3600000
+    "greetCooldownMs": 3600000,
+    "motdEnabled": false,
+    "motdInterval": 5,
+    "motd": "Mensagem do dia",
+    "intervalMessages": [],
+    "messageInterval": 5,
+    "blacklistEnabled": true,
+    "timeGuardEnabled": false,
+    "maxSongLengthMin": 10
 }

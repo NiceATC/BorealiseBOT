@@ -12,6 +12,8 @@
         "@borealise/api": "^2.0.0-alpha.2",
         "@borealise/pipeline": "^1.0.0-alpha.1",
         "dotenv": "^16.5.0",
+        "sqlite": "^5.1.1",
+        "sqlite3": "^6.0.1",
         "ws": "^8.19.0"
     }
 }

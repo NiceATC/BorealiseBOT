@@ -1,7 +1,7 @@
 /**
  * commands/mod.js — Moderation commands
  *
- * Commands: !skip, !kick, !mute, !unmute, !ban, !unban
+ * Commands: !skip, !lock, !unlock, !remove, !move, !kick, !mute, !unmute, !ban, !unban
  *
  * All commands require BOTH:
  *   1. The bot to hold the required role in the room (otherwise the REST call
@@ -25,7 +25,13 @@
  *   api.room.ban(slug, userId, { duration?, reason? })   — duration in minutes
  *   api.room.unban(slug, userId)
  *   api.room.getBans(slug)
+ *   api.room.lockWaitlist(slug)
+ *   api.room.unlockWaitlist(slug)
+ *   api.room.removeFromWaitlist(slug, userId)
+ *   api.room.moveInWaitlist(slug, userId, position)
  */
+
+import { setSetting } from "../lib/storage.js";
 
 // ── Duration helpers ──────────────────────────────────────────────────────────
 
@@ -93,6 +99,225 @@ const skip = {
     } catch (err) {
       await reply(`Erro ao pular: ${err.message}`);
     }
+  },
+};
+
+const lock = {
+  name: "lock",
+  aliases: ["lockwl", "lockqueue", "travar"],
+  description: "Trava a fila de DJs. Requer cargo bouncer ou superior.",
+  usage: "!lock",
+  cooldown: 5_000,
+  minRole: "bouncer",
+
+  async execute(ctx) {
+    const { api, bot, reply } = ctx;
+    try {
+      await api.room.lockWaitlist(bot.cfg.room);
+      await reply("Fila travada.");
+    } catch (err) {
+      await reply(`Erro ao travar a fila: ${err.message}`);
+    }
+  },
+};
+
+const unlock = {
+  name: "unlock",
+  aliases: ["unlockwl", "unlockqueue", "destravar"],
+  description: "Destrava a fila de DJs. Requer cargo bouncer ou superior.",
+  usage: "!unlock",
+  cooldown: 5_000,
+  minRole: "bouncer",
+
+  async execute(ctx) {
+    const { api, bot, reply } = ctx;
+    try {
+      await api.room.unlockWaitlist(bot.cfg.room);
+      await reply("Fila destravada.");
+    } catch (err) {
+      await reply(`Erro ao destravar a fila: ${err.message}`);
+    }
+  },
+};
+
+const remove = {
+  name: "remove",
+  aliases: ["remover", "rm"],
+  description:
+    "Remove um usuario da fila de DJs. Requer cargo bouncer ou superior.",
+  usage: "!remove <usuario>",
+  cooldown: 5_000,
+  minRole: "bouncer",
+
+  async execute(ctx) {
+    const { api, bot, args, reply } = ctx;
+    const target = (args[0] ?? "").replace(/^@/, "").trim();
+    if (!target) {
+      await reply("Uso: !remove <usuario>");
+      return;
+    }
+
+    const user = bot.findRoomUser(target);
+    if (!user) {
+      await reply(`Usuario "${target}" nao encontrado na sala.`);
+      return;
+    }
+
+    try {
+      const wlRes = await api.room.getWaitlist(bot.cfg.room);
+      const wl = wlRes?.data?.data?.waitlist ?? wlRes?.data?.waitlist ?? [];
+      const inList = Array.isArray(wl)
+        ? wl.some((u) => String(u.id ?? u.userId) === String(user.userId))
+        : false;
+
+      if (!inList) {
+        await reply(`Usuario "${target}" nao esta na fila.`);
+        return;
+      }
+
+      await api.room.removeFromWaitlist(bot.cfg.room, Number(user.userId));
+      await reply(`${user.displayName ?? user.username} foi removido da fila.`);
+    } catch (err) {
+      await reply(`Erro ao remover da fila: ${err.message}`);
+    }
+  },
+};
+
+const move = {
+  name: "move",
+  aliases: ["mover", "mv"],
+  description:
+    "Move um usuario para uma posicao especifica na fila de DJs. Requer cargo bouncer ou superior.",
+  usage: "!move <usuario> <posicao>",
+  cooldown: 5_000,
+  minRole: "bouncer",
+
+  async execute(ctx) {
+    const { api, bot, args, reply } = ctx;
+    const target = (args[0] ?? "").replace(/^@/, "").trim();
+    const pos = parseInt(args[1], 10);
+    if (!target || isNaN(pos) || pos < 1) {
+      await reply("Uso: !move <usuario> <posicao> (1 = primeiro)");
+      return;
+    }
+
+    const user = bot.findRoomUser(target);
+    if (!user) {
+      await reply(`Usuario "${target}" nao encontrado na sala.`);
+      return;
+    }
+
+    try {
+      const apiPos = pos - 1;
+      await api.room.moveInWaitlist(bot.cfg.room, Number(user.userId), apiPos);
+      await reply(
+        `${user.displayName ?? user.username} foi movido para a posicao ${pos} na fila.`,
+      );
+    } catch (err) {
+      await reply(`Erro ao mover: ${err.message}`);
+    }
+  },
+};
+
+const swap = {
+  name: "swap",
+  aliases: ["trocar"],
+  description:
+    "Troca a posicao de dois usuarios na fila. Requer cargo bouncer ou superior.",
+  usage: "!swap <usuario1> <usuario2>",
+  cooldown: 5_000,
+  minRole: "bouncer",
+
+  async execute(ctx) {
+    const { api, bot, args, reply } = ctx;
+    const targetA = (args[0] ?? "").replace(/^@/, "").trim();
+    const targetB = (args[1] ?? "").replace(/^@/, "").trim();
+
+    if (!targetA || !targetB) {
+      await reply("Uso: !swap <usuario1> <usuario2>");
+      return;
+    }
+
+    const userA = bot.findRoomUser(targetA);
+    const userB = bot.findRoomUser(targetB);
+    if (!userA || !userB) {
+      await reply("Usuario nao encontrado na sala.");
+      return;
+    }
+
+    try {
+      const wlRes = await api.room.getWaitlist(bot.cfg.room);
+      const wl = wlRes?.data?.data?.waitlist ?? wlRes?.data?.waitlist ?? [];
+      const idxA = Array.isArray(wl)
+        ? wl.findIndex((u) => String(u.id ?? u.userId) === String(userA.userId))
+        : -1;
+      const idxB = Array.isArray(wl)
+        ? wl.findIndex((u) => String(u.id ?? u.userId) === String(userB.userId))
+        : -1;
+
+      if (idxA < 0 || idxB < 0) {
+        await reply("Ambos os usuarios precisam estar na fila.");
+        return;
+      }
+
+      if (idxA === idxB) {
+        await reply("Os usuarios ja estao na mesma posicao.");
+        return;
+      }
+
+      if (idxA < idxB) {
+        await api.room.moveInWaitlist(bot.cfg.room, Number(userB.userId), idxA);
+        await api.room.moveInWaitlist(bot.cfg.room, Number(userA.userId), idxB);
+      } else {
+        await api.room.moveInWaitlist(bot.cfg.room, Number(userA.userId), idxB);
+        await api.room.moveInWaitlist(bot.cfg.room, Number(userB.userId), idxA);
+      }
+
+      await reply(
+        `Swap realizado: ${userA.displayName ?? userA.username} <-> ${userB.displayName ?? userB.username}.`,
+      );
+    } catch (err) {
+      await reply(`Erro ao trocar posicoes: ${err.message}`);
+    }
+  },
+};
+
+const timeguard = {
+  name: "timeguard",
+  aliases: ["tg"],
+  description: "Ativa ou desativa o limite de tempo de musica.",
+  usage: "!timeguard",
+  cooldown: 5_000,
+  minRole: "bouncer",
+
+  async execute(ctx) {
+    const { bot, reply } = ctx;
+    const enabled = !bot.cfg.timeGuardEnabled;
+    bot.updateConfig("timeGuardEnabled", enabled);
+    await setSetting("timeGuardEnabled", enabled);
+    await reply(`Timeguard ${enabled ? "ativado" : "desativado"}.`);
+  },
+};
+
+const maxlength = {
+  name: "maxlength",
+  aliases: ["maxlen", "maxsong"],
+  description: "Define a duracao maxima de musica (em minutos).",
+  usage: "!maxlength <min>",
+  cooldown: 5_000,
+  minRole: "manager",
+
+  async execute(ctx) {
+    const { bot, args, reply } = ctx;
+    const minutes = Number(args[0]);
+    if (!Number.isFinite(minutes) || minutes < 1) {
+      await reply("Uso: !maxlength <min>");
+      return;
+    }
+    const value = Math.floor(minutes);
+    bot.updateConfig("maxSongLengthMin", value);
+    await setSetting("maxSongLengthMin", value);
+    await reply(`Duracao maxima atualizada para ${value} min.`);
   },
 };
 
@@ -312,4 +537,18 @@ const unban = {
 };
 
 // Array export — CommandRegistry.loadDir() handles both single and array exports.
-export default [skip, kick, mute, unmute, ban, unban];
+export default [
+  skip,
+  lock,
+  unlock,
+  remove,
+  move,
+  swap,
+  timeguard,
+  maxlength,
+  kick,
+  mute,
+  unmute,
+  ban,
+  unban,
+];
