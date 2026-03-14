@@ -102,7 +102,9 @@ async function closeRoulette(bot, api) {
   try {
     waitlist = await getWaitlist(api, bot.cfg.room);
   } catch (err) {
-    await bot.sendChat(`Roulette encerrada: erro ao ler a fila (${err.message}).`);
+    await bot.sendChat(
+      `Roulette encerrada: erro ao ler a fila (${err.message}).`,
+    );
     return;
   }
 
