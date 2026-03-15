@@ -17,5 +17,6 @@
     "messageInterval": 5,
     "blacklistEnabled": true,
     "timeGuardEnabled": false,
-    "maxSongLengthMin": 10
+    "maxSongLengthMin": 10,
+    "mediaCheckDebug": true
 }

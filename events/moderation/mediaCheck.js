@@ -6,13 +6,18 @@
  */
 
 import { Events } from "@borealise/pipeline";
-import ytdl from "ytdl-core";
+import ytdl from "@distube/ytdl-core";
 import { getRoleLevel } from "../../lib/permissions.js";
+import dns from "dns";
+dns.setDefaultResultOrder("ipv4first");
 
 const YOUTUBE_SOURCES = new Set(["youtube", "yt", "ytmusic", "youtubemusic"]);
+const CHECK_API_BASE = "https://yt.niceatc.api.br/check?id=";
+const CHECK_API_TIMEOUT_MS = 10_000;
+const YOUTUBE_ID_RE = /^[A-Za-z0-9_-]{11}$/;
 
 function getMediaId(media) {
-  return (
+  const primary =
     media?.sourceId ??
     media?.source_id ??
     media?.youtubeId ??
@@ -20,8 +25,60 @@ function getMediaId(media) {
     media?.cid ??
     media?.videoId ??
     media?.video_id ??
-    null
+    null;
+  const fromPrimary = extractYouTubeId(primary);
+  if (fromPrimary) return fromPrimary;
+
+  const urlCandidate =
+    media?.link ??
+    media?.url ??
+    media?.sourceUrl ??
+    media?.source_url ??
+    media?.uri ??
+    media?.permalink ??
+    media?.permalink_url ??
+    media?.videoUrl ??
+    media?.video_url ??
+    null;
+  return extractYouTubeId(urlCandidate);
+}
+
+function isValidYouTubeId(value) {
+  return typeof value === "string" && YOUTUBE_ID_RE.test(value);
+}
+
+function extractYouTubeId(value) {
+  if (!value) return null;
+  const raw = String(value).trim();
+  if (!raw) return null;
+  if (isValidYouTubeId(raw)) return raw;
+
+  try {
+    const url = new URL(raw);
+    const host = url.hostname.replace(/^www\./, "").toLowerCase();
+
+    if (host === "youtu.be") {
+      const id = url.pathname.split("/").filter(Boolean)[0];
+      return isValidYouTubeId(id) ? id : null;
+    }
+
+    if (host.endsWith("youtube.com") || host.endsWith("youtube-nocookie.com")) {
+      const v = url.searchParams.get("v");
+      if (isValidYouTubeId(v)) return v;
+
+      const parts = url.pathname.split("/").filter(Boolean);
+      if ((parts[0] === "shorts" || parts[0] === "embed") && parts[1]) {
+        return isValidYouTubeId(parts[1]) ? parts[1] : null;
+      }
+    }
+  } catch {
+    // ignore invalid URLs
+  }
+
+  const match = raw.match(
+    /(?:v=|youtu\.be\/|youtube\.com\/shorts\/|youtube\.com\/embed\/)([A-Za-z0-9_-]{11})/,
   );
+  return match && isValidYouTubeId(match[1]) ? match[1] : null;
 }
 
 function isYoutubeSource(media) {
@@ -43,18 +100,57 @@ function getLabel(media, bot) {
 }
 
 function getPlayability(info) {
-  const status =
-    info?.player_response?.playabilityStatus?.status ??
-    info?.playabilityStatus?.status ??
-    "";
-  const reason =
-    info?.player_response?.playabilityStatus?.reason ??
-    info?.playabilityStatus?.reason ??
-    "";
+  const ps =
+    info?.player_response?.playabilityStatus ?? info?.playabilityStatus ?? {};
+  const status = ps.status ?? "";
+  const reason = ps.reason ?? "";
   const ageRestricted = Boolean(
     info?.videoDetails?.age_restricted ?? info?.videoDetails?.ageRestricted,
   );
-  return { status: String(status), reason: String(reason), ageRestricted };
+  const playableInEmbed = ps.playableInEmbed;
+  return {
+    status: String(status),
+    reason: String(reason),
+    ageRestricted,
+    playableInEmbed,
+  };
+}
+
+async function checkWithApi(videoId, debug) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), CHECK_API_TIMEOUT_MS);
+  const url = `${CHECK_API_BASE}${encodeURIComponent(videoId)}`;
+
+  try {
+    const res = await fetch(url, { signal: controller.signal });
+
+    if (!res.ok) {
+      if (debug) console.log(`[mediaCheck] api http ${res.status}`);
+      return null;
+    }
+
+    const data = await res.json().catch(() => null);
+    if (!data || typeof data !== "object") {
+      if (debug) console.log("[mediaCheck] api invalid response");
+      return null;
+    }
+
+    const blocked = Boolean(data.blocked);
+    const ageRestricted = Boolean(data.ageRestricted);
+    const ageLimit = Number(data.ageLimit ?? 0);
+    const availability = String(data.availability ?? "").toLowerCase();
+
+    return { blocked, ageRestricted, ageLimit, availability };
+  } catch (err) {
+    if (debug) {
+      const label =
+        err?.name === "AbortError" ? "timeout" : (err?.message ?? err);
+      console.log(`[mediaCheck] api error: ${label}`);
+    }
+    return null;
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }
 
 export default {
@@ -64,6 +160,7 @@ export default {
 
   async handle(ctx, data) {
     const { bot, api, reply } = ctx;
+    const debug = Boolean(bot?.cfg?.mediaCheckDebug);
     if (bot.getBotRoleLevel() < getRoleLevel("bouncer")) return;
 
     const media =
@@ -71,41 +168,102 @@ export default {
     if (!isYoutubeSource(media)) return;
 
     const videoId = getMediaId(media);
-    if (!videoId) return;
-
-    if (typeof ytdl.validateID === "function" && !ytdl.validateID(videoId)) {
-      return;
-    }
-
-    const url = `https://www.youtube.com/watch?v=${videoId}`;
-    let info;
-    try {
-      info = await ytdl.getBasicInfo(url);
-    } catch {
-      const label = getLabel(media, bot);
-      try {
-        await reply(`Musica indisponivel. Pulando: ${label}.`);
-        await api.room.skipTrack(bot.cfg.room);
-      } catch {
-        // best-effort
+    if (!videoId) {
+      if (debug) {
+        console.log(
+          `[mediaCheck] No YouTube id found. Keys: ${Object.keys(media).join(", ")}`,
+        );
       }
       return;
     }
 
-    const { status, reason, ageRestricted } = getPlayability(info);
-    const restricted = ageRestricted || (reason && /age|idade/i.test(reason));
-
-    if (status === "OK" && !restricted) return;
-
-    const label = getLabel(media, bot);
-    const reasonText = restricted ? "restricao de idade" : "indisponivel";
-    const detail = reason ? ` (${reason})` : "";
-
-    try {
-      await reply(`Musica ${reasonText}${detail}. Pulando: ${label}.`);
-      await api.room.skipTrack(bot.cfg.room);
-    } catch {
-      // best-effort
+    if (debug) {
+      const title = media?.title ?? "";
+      const source = media?.source ?? media?.platform ?? "";
+      console.log(`[mediaCheck] Checking ${source} ${videoId} ${title}`);
     }
+
+    async function skipTrack(reasonText, detail) {
+      const label = getLabel(media, bot);
+      try {
+        await reply(`Musica ${reasonText}${detail}. Pulando: ${label}.`);
+        await api.room.skipTrack(bot.cfg.room);
+      } catch {
+        // best-effort
+      }
+    }
+
+    const url = `https://www.youtube.com/watch?v=${videoId}`;
+    let info = null;
+    try {
+      info = await ytdl.getBasicInfo(url);
+    } catch (err) {
+      const msg = String(err?.message ?? "");
+      if (debug) console.log(`[mediaCheck] ytdl error: ${msg}`);
+    }
+
+    if (info) {
+      const { status, reason, ageRestricted, playableInEmbed } =
+        getPlayability(info);
+      const isPrivate = Boolean(info?.videoDetails?.isPrivate);
+      const isPlayable = info?.videoDetails?.isPlayable;
+      const restricted = ageRestricted;
+      const blockedByStatus = status === "ERROR" || status === "UNPLAYABLE";
+      const blockedByEmbed = playableInEmbed === false;
+      const blockedByFlags = isPrivate || isPlayable === false;
+      const isLoginRequired = status === "LOGIN_REQUIRED";
+
+      if (debug) {
+        console.log(
+          `[mediaCheck] ytdl status=${status} ageRestricted=${ageRestricted} embeddable=${playableInEmbed} reason=${reason}`,
+        );
+      }
+
+      if (isLoginRequired && !restricted) {
+        if (debug) {
+          console.log("[mediaCheck] ytdl login_required; falling back to api");
+        }
+      } else if (restricted || blockedByStatus || blockedByEmbed || blockedByFlags) {
+        const reasonText = restricted ? "restricao de idade" : "indisponivel";
+        const detail = reason ? ` (${reason})` : "";
+        await skipTrack(reasonText, detail);
+        return;
+      } else if (status === "OK") {
+        if (debug) console.log("[mediaCheck] allowed by ytdl");
+        return;
+      } else if (debug) {
+        console.log("[mediaCheck] ytdl inconclusive; falling back to api");
+      }
+    }
+
+    const apiResult = await checkWithApi(videoId, debug);
+    if (!apiResult) {
+      if (debug) console.log("[mediaCheck] api unavailable; allowing");
+      return;
+    }
+
+    const availability = apiResult.availability;
+    const ageLimit = apiResult.ageLimit;
+    const restricted =
+      apiResult.ageRestricted || (Number.isFinite(ageLimit) && ageLimit >= 18);
+    const blockedByAvailability = availability && availability !== "public";
+    const shouldSkip = apiResult.blocked || restricted || blockedByAvailability;
+
+    if (debug) {
+      const ageLog = Number.isFinite(ageLimit) ? ageLimit : "";
+      console.log(
+        `[mediaCheck] api blocked=${apiResult.blocked} ageRestricted=${apiResult.ageRestricted} ageLimit=${ageLog} availability=${availability}`,
+      );
+    }
+
+    if (!shouldSkip) {
+      if (debug) console.log("[mediaCheck] allowed by api");
+      return;
+    }
+
+    const reasonText = restricted ? "restricao de idade" : "indisponivel";
+    const detail =
+      blockedByAvailability && availability ? ` (${availability})` : "";
+    await skipTrack(reasonText, detail);
   },
 };

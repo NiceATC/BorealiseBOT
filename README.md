@@ -53,6 +53,8 @@ BorealiseBOT/
     core/
       help.js            — !help [command]
       ping.js            — !ping
+      start.js           — !start
+      stop.js            — !stop
       reload.js          — !reload
       reloadcmd.js       — !reloadcmd
     info/
@@ -110,7 +112,7 @@ BorealiseBOT/
 
 Use `!help` in chat to see the full list with aliases and usage.
 
-- Core: `!help`, `!ping`, `!reload`, `!reloadcmd`
+- Core: `!help`, `!ping`, `!start`, `!stop`, `!reload`, `!reloadcmd`
 - Info: `!np`/`!nowplaying`, `!stats`, `!queue`
 - Music: `!woot`, `!blacklist` (add/remove/list/info), `!togglebl`, `!motd`, `!togglemotd`
 - Moderation: `!skip`, `!lock`, `!unlock`, `!remove`, `!move`, `!swap`, `!timeguard`, `!maxlength`, `!kick`, `!mute`, `!unmute`, `!ban`, `!unban`
@@ -208,26 +210,27 @@ bot.events.disable("my-event");
 
 ### Settings (`config.json`)
 
-| Key                    | Default                              | Description                                    |
-| ---------------------- | ------------------------------------ | ---------------------------------------------- |
-| `room`                 | _(required)_                         | Room slug to join                              |
-| `apiUrl`               | `https://prod.borealise.com/api`     | REST API base URL                              |
-| `wsUrl`                | `wss://prod.borealise.com/ws`        | WebSocket pipeline URL                         |
-| `cmdPrefix`            | `!`                                  | Command prefix character                       |
-| `autoWoot`             | `true`                               | Auto-woot every new track                      |
-| `botMessage`           | `"Oi! Sou um bot…"`                  | Reply when @mentioned; leave empty to disable  |
-| `botMentionCooldownMs` | `30000`                              | Min ms between mention replies                 |
-| `greetEnabled`         | `true`                               | Send welcome message on user join              |
-| `greetMessage`         | `"🎵 Bem-vindo(a) à sala, @{name}!"` | Welcome template (`{name}` / `{username}`)     |
-| `greetCooldownMs`      | `3600000`                            | Per-user cooldown for greets (default: 1 hour) |
-| `motdEnabled`          | `false`                              | Enable MOTD                                    |
-| `motdInterval`         | `5`                                  | Songs between MOTD messages                    |
-| `motd`                 | `"Mensagem do dia"`                  | MOTD content                                   |
-| `intervalMessages`     | `[]`                                 | Interval messages list                         |
-| `messageInterval`      | `5`                                  | Songs between interval messages                |
-| `blacklistEnabled`     | `true`                               | Enable track blacklist                         |
-| `timeGuardEnabled`     | `false`                              | Enable time guard                              |
-| `maxSongLengthMin`     | `10`                                 | Max song length in minutes                     |
+| Key                    | Default                              | Description                                     |
+| ---------------------- | ------------------------------------ | ----------------------------------------------- |
+| `room`                 | _(required)_                         | Room slug to join                               |
+| `apiUrl`               | `https://prod.borealise.com/api`     | REST API base URL                               |
+| `wsUrl`                | `wss://prod.borealise.com/ws`        | WebSocket pipeline URL                          |
+| `cmdPrefix`            | `!`                                  | Command prefix character                        |
+| `autoWoot`             | `true`                               | Auto-woot every new track                       |
+| `botMessage`           | `"Oi! Sou um bot…"`                  | Reply when @mentioned; leave empty to disable   |
+| `botMentionCooldownMs` | `30000`                              | Min ms between mention replies                  |
+| `greetEnabled`         | `true`                               | Send welcome message on user join               |
+| `greetMessage`         | `"🎵 Bem-vindo(a) à sala, @{name}!"` | Welcome template (`{name}` / `{username}`)      |
+| `greetCooldownMs`      | `3600000`                            | Per-user cooldown for greets (default: 1 hour)  |
+| `motdEnabled`          | `false`                              | Enable MOTD                                     |
+| `motdInterval`         | `5`                                  | Songs between MOTD messages                     |
+| `motd`                 | `"Mensagem do dia"`                  | MOTD content                                    |
+| `intervalMessages`     | `[]`                                 | Interval messages list                          |
+| `messageInterval`      | `5`                                  | Songs between interval messages                 |
+| `blacklistEnabled`     | `true`                               | Enable track blacklist                          |
+| `timeGuardEnabled`     | `false`                              | Enable time guard                               |
+| `maxSongLengthMin`     | `10`                                 | Max song length in minutes                      |
+| `mediaCheckDebug`      | `false`                              | Log details from mediaCheck                     |
 
 Settings changed via `!settings` are persisted and override `config.json` on startup.
 
