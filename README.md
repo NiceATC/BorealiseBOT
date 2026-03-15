@@ -98,6 +98,7 @@ BorealiseBOT/
     core/
       greet.js           — welcome message on user join
     moderation/
+      mediaCheck.js       — skip age-restricted/blocked tracks
       timeGuard.js       — skip long tracks
     queue/
       waitlistSnapshot.js — snapshot for !dc
