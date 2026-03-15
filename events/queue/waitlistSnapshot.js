@@ -10,13 +10,21 @@ import { upsertWaitlistSnapshot } from "../../lib/storage.js";
 export default {
   name: "waitlistSnapshot",
   description: "Salva a fila atual para o comando !dc.",
-  event: Events.ROOM_WAITLIST_UPDATE,
+  events: [
+    Events.ROOM_WAITLIST_UPDATE,
+    Events.ROOM_WAITLIST_JOIN,
+    Events.ROOM_WAITLIST_LEAVE,
+    Events.ROOM_DJ_ADVANCE,
+  ],
   cooldown: 2000,
 
-  async handle(ctx) {
+  async handle(ctx, data) {
     try {
-      const res = await ctx.api.room.getWaitlist(ctx.room);
-      const waitlist = res?.data?.data?.waitlist ?? res?.data?.waitlist ?? [];
+      let waitlist = data?.waitlist ?? data?.queue ?? null;
+      if (!Array.isArray(waitlist)) {
+        const res = await ctx.api.room.getWaitlist(ctx.room);
+        waitlist = res?.data?.data?.waitlist ?? res?.data?.waitlist ?? [];
+      }
       if (!Array.isArray(waitlist) || waitlist.length === 0) return;
 
       const entries = waitlist.map((u, idx) => ({

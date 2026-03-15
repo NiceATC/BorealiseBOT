@@ -31,7 +31,7 @@ export default {
   name: "thor",
   description: "Teste sua sorte com o martelo do Thor.",
   usage: "!thor",
-  cooldown: 10_000,
+  cooldown: 1000_000,
 
   async execute(ctx) {
     const { bot, api, sender, reply } = ctx;
