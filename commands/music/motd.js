@@ -10,20 +10,27 @@ import { setSetting } from "../../lib/storage.js";
 const motd = {
   name: "motd",
   aliases: ["mensagem"],
-  description: "Configura a mensagem do dia (MOTD) e o intervalo.",
-  usage: "!motd [mensagem|on|off|interval <n>]",
+  descriptionKey: "commands.motd.description",
+  usageKey: "commands.motd.usage",
   cooldown: 5000,
   minRole: "bouncer",
 
   async execute(ctx) {
-    const { bot, args, reply } = ctx;
+    const { bot, args, reply, t } = ctx;
 
     if (args.length === 0) {
       const enabled = Boolean(bot.cfg.motdEnabled);
       const interval = bot.cfg.motdInterval ?? 0;
       const msg = bot.cfg.motd ?? "";
+      const state = enabled
+        ? t("commands.motd.stateOn")
+        : t("commands.motd.stateOff");
       await reply(
-        `MOTD ${enabled ? "ativado" : "desativado"} | intervalo: ${interval} | mensagem: ${msg}`,
+        t("commands.motd.status", {
+          state,
+          interval,
+          message: msg,
+        }),
       );
       return;
     }
@@ -33,25 +40,31 @@ const motd = {
       const enabled = sub === "on";
       bot.updateConfig("motdEnabled", enabled);
       await setSetting("motdEnabled", enabled);
-      await reply(`MOTD ${enabled ? "ativado" : "desativado"}.`);
+      await reply(
+        t(enabled ? "commands.motd.enabled" : "commands.motd.disabled"),
+      );
       return;
     }
 
     if (sub === "interval") {
       const n = Number(args[1]);
       if (!Number.isFinite(n) || n <= 0) {
-        await reply("Uso: !motd interval <numero>");
+        await reply(t("commands.motd.intervalUsage"));
         return;
       }
       bot.updateConfig("motdInterval", Math.floor(n));
       await setSetting("motdInterval", Math.floor(n));
-      await reply(`Intervalo do MOTD atualizado para ${Math.floor(n)}.`);
+      await reply(
+        t("commands.motd.intervalUpdated", {
+          interval: Math.floor(n),
+        }),
+      );
       return;
     }
 
     const message = args.join(" ").trim();
     if (!message) {
-      await reply("Uso: !motd <mensagem>");
+      await reply(t("commands.motd.messageUsage"));
       return;
     }
 
@@ -59,24 +72,30 @@ const motd = {
     bot.updateConfig("motdEnabled", true);
     await setSetting("motd", message);
     await setSetting("motdEnabled", true);
-    await reply("MOTD atualizado e ativado.");
+    await reply(t("commands.motd.updated"));
   },
 };
 
 const togglemotd = {
   name: "togglemotd",
   aliases: ["motdtoggle"],
-  description: "Ativa ou desativa a mensagem do dia (MOTD).",
-  usage: "!togglemotd",
+  descriptionKey: "commands.togglemotd.description",
+  usageKey: "commands.togglemotd.usage",
   cooldown: 5000,
   minRole: "bouncer",
 
   async execute(ctx) {
-    const { bot, reply } = ctx;
+    const { bot, reply, t } = ctx;
     const enabled = !bot.cfg.motdEnabled;
     bot.updateConfig("motdEnabled", enabled);
     await setSetting("motdEnabled", enabled);
-    await reply(`MOTD ${enabled ? "ativado" : "desativado"}.`);
+    await reply(
+      t(
+        enabled
+          ? "commands.togglemotd.enabled"
+          : "commands.togglemotd.disabled",
+      ),
+    );
   },
 };
 

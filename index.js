@@ -18,9 +18,14 @@ import { sleep } from "./helpers/time.js";
 import { isServerDownError } from "./helpers/errors.js";
 import { printBanner } from "./helpers/banner.js";
 import { BOT_VERSION } from "./lib/version.js";
+import { t as translate } from "./lib/i18n.js";
 
 let bot;
+let locale;
 const RETRY_MS = 30_000;
+const SHUTDOWN_TIMEOUT_MS = 10_000;
+
+const t = (key, vars) => translate(key, vars, locale);
 
 // ── Graceful shutdown ─────────────────────────────────────────────────────────
 
@@ -29,20 +34,50 @@ let stopping = false;
 async function shutdown(signal) {
   if (stopping) return;
   stopping = true;
-  console.log(`\n[index] ${signal} received — shutting down…`);
-  if (bot) await bot.stop();
-  process.exit(0);
+  console.log(t("index.shutdown", { signal }));
+  const timeoutId = setTimeout(() => {
+    console.error(
+      t("index.shutdownTimeout", {
+        seconds: SHUTDOWN_TIMEOUT_MS / 1000,
+      }),
+    );
+    process.exit(1);
+  }, SHUTDOWN_TIMEOUT_MS);
+
+  try {
+    if (bot) await bot.stop();
+  } catch (err) {
+    console.error(t("index.shutdownError", { error: err.message }));
+  } finally {
+    clearTimeout(timeoutId);
+    process.exit(0);
+  }
 }
 
 process.on("SIGINT", () => shutdown("SIGINT"));
 process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("uncaughtException", (err) => {
+  console.error(t("index.uncaughtException", { error: err?.message ?? err }));
+  void shutdown("uncaughtException");
+});
+process.on("unhandledRejection", (err) => {
+  console.error(t("index.unhandledRejection", { error: err?.message ?? err }));
+  void shutdown("unhandledRejection");
+});
 // ── Start ──────────────────────────────────────────────────────────────────────
 async function main() {
-  printBanner({ name: "NiceATC", version: BOT_VERSION });
-  await initStorage();
-  const cfg = applyStoredSettings(loadConfig(), await getAllSettings());
-  bot = new BorealiseBot(cfg);
-  await bot.loadModules();
+  let cfg;
+  try {
+    await initStorage();
+    cfg = applyStoredSettings(loadConfig(), await getAllSettings());
+    locale = cfg.locale;
+    printBanner({ name: "NiceATC", version: BOT_VERSION, locale });
+    bot = new BorealiseBot(cfg);
+    await bot.loadModules();
+  } catch (err) {
+    console.error(t("index.initFailed", { error: err.message }));
+    process.exit(1);
+  }
 
   while (true) {
     try {
@@ -51,16 +86,21 @@ async function main() {
     } catch (err) {
       if (isServerDownError(err)) {
         console.error(
-          `[index] Server unavailable. Retrying in ${RETRY_MS / 1000}s...`,
+          t("index.serverUnavailable", {
+            seconds: RETRY_MS / 1000,
+          }),
         );
         await sleep(RETRY_MS);
         continue;
       }
 
-      console.error("[index] Fatal startup error:", err.message);
+      console.error(t("index.fatalStartup", { error: err.message }));
       process.exit(1);
     }
   }
 }
 
-main();
+main().catch((err) => {
+  console.error(t("index.mainFailed", { error: err.message }));
+  process.exit(1);
+});

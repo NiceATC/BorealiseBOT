@@ -8,7 +8,8 @@
  *
  *   export default {
  *     name:          string      — identifier (used for enable/disable)
- *     description:   string      — human-readable description
+ *     descriptionKey?: string    — i18n key for the description
+ *     description?:   string     — fallback if no key is provided
  *     enabled?:      boolean     — default enabled state (default: true)
  *
  *     event?:        number      — single pipeline event code (Events.*)
@@ -39,7 +40,7 @@
  *
  *   export default {
  *     name: "myHandler",
- *     description: "Does something on every DJ advance.",
+ *     descriptionKey: "events.myHandler.description",
  *     event: Events.ROOM_DJ_ADVANCE,
  *     async handle(ctx, data) {
  *       await ctx.reply(`Now playing: ${data?.media?.title}`);
@@ -50,6 +51,7 @@
 import { fileURLToPath, pathToFileURL } from "url";
 import path from "path";
 import { listJsFilesRecursive } from "../helpers/fs.js";
+import { t as translate } from "../lib/i18n.js";
 
 export class EventRegistry {
   constructor() {
@@ -75,9 +77,7 @@ export class EventRegistry {
    */
   register(def) {
     if (!def?.name || typeof def.handle !== "function") {
-      throw new Error(
-        `[EventRegistry] Invalid handler: must have "name" and "handle".`,
-      );
+      throw new Error(translate("events.registry.invalidHandler"));
     }
 
     const events = Array.isArray(def.events)
@@ -88,13 +88,19 @@ export class EventRegistry {
 
     if (events.length === 0) {
       throw new Error(
-        `[EventRegistry] Handler "${def.name}" must specify "event" or "events".`,
+        translate("events.registry.missingEvent", {
+          name: def.name,
+        }),
       );
     }
 
     const key = def.name.toLowerCase();
     if (this._handlers.has(key)) {
-      console.warn(`[EventRegistry] Overwriting existing handler: ${key}`);
+      console.warn(
+        translate("events.registry.overwrite", {
+          name: key,
+        }),
+      );
     }
 
     // Store a normalised copy with pre-computed _events array
@@ -236,8 +242,12 @@ export class EventRegistry {
       try {
         await def.handle(ctx, data);
       } catch (err) {
-        console.error(
-          `[EventRegistry] Error in "${def.name}" handler: ${err.message}`,
+        ctx.bot._log(
+          "warn",
+          ctx.t("events.registry.handlerError", {
+            name: def.name,
+            error: err.message,
+          }),
         );
       }
     }

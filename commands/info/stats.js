@@ -16,24 +16,32 @@ function formatUptime(seconds) {
 export default {
   name: "stats",
   aliases: ["status", "info", "bot"],
-  description: "Mostra estatísticas da sessão atual do bot.",
-  usage: "!stats",
+  descriptionKey: "commands.stats.description",
+  usageKey: "commands.stats.usage",
   cooldown: 8_000,
 
   async execute(ctx) {
-    const { bot, reply } = ctx;
+    const { bot, reply, t } = ctx;
     const s = bot.getSessionState();
 
     if (!s.startedAt) {
-      await reply("Bot ainda não está totalmente conectado.");
+      await reply(t("commands.stats.notReady"));
       return;
     }
 
     const uptime = formatUptime(s.uptimeSec);
-    const parts = [`⏱ Uptime: ${uptime}`, `👍 Woots dados: ${s.wootCount}`];
+    const parts = [
+      t("commands.stats.uptime", { uptime }),
+      t("commands.stats.woots", { count: s.wootCount }),
+    ];
 
     if (s.waitlistPosition) {
-      parts.push(`🎧 Fila: #${s.waitlistPosition}/${s.waitlistTotal ?? "?"}`);
+      parts.push(
+        t("commands.stats.queue", {
+          position: s.waitlistPosition,
+          total: s.waitlistTotal ?? "?",
+        }),
+      );
     }
 
     await reply(parts.join("  •  "));

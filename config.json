@@ -1,6 +1,7 @@
 {
     "_comment": "Copy this file to config.json and adjust the values. Keep secrets (email/password) in .env",
     "room": "mib",
+    "locale": "pt-BR",
     "apiUrl": "https://prod.borealise.com/api",
     "wsUrl": "wss://prod.borealise.com/ws",
     "cmdPrefix": "!",
@@ -15,6 +16,7 @@
     "motd": "Mensagem do dia",
     "intervalMessages": [],
     "messageInterval": 5,
+    "dcWindowMin": 10,
     "blacklistEnabled": true,
     "timeGuardEnabled": false,
     "maxSongLengthMin": 10,

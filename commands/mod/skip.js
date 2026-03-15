@@ -5,22 +5,22 @@
 export default {
   name: "skip",
   aliases: ["pular"],
-  description: "Pula a musica atual. Requer cargo bouncer ou superior.",
-  usage: "!skip [motivo]",
+  descriptionKey: "commands.skip.description",
+  usageKey: "commands.skip.usage",
   cooldown: 5_000,
   minRole: "bouncer",
 
   async execute(ctx) {
-    const { api, bot, reply, rawArgs } = ctx;
+    const { api, bot, reply, rawArgs, t } = ctx;
     const reason = String(rawArgs ?? "").trim();
     try {
       await api.room.skipTrack(bot.cfg.room);
       const msg = reason
-        ? `⏭ Musica pulada. Motivo: ${reason}.`
-        : "⏭ Musica pulada.";
+        ? t("commands.skip.successWithReason", { reason })
+        : t("commands.skip.success");
       await reply(msg);
     } catch (err) {
-      await reply(`Erro ao pular: ${err.message}`);
+      await reply(t("commands.skip.error", { error: err.message }));
     }
   },
 };

@@ -7,53 +7,55 @@
 import { getWaitlistSnapshot } from "../../lib/storage.js";
 import { ROLE_LEVELS } from "../../lib/permissions.js";
 
-const DC_WINDOW_MS = 10 * 60 * 1000;
+const DC_MIN_FALLBACK = 10;
 
 export default {
   name: "dc",
   aliases: ["dclookup"],
-  description: "Restaura a posicao do usuario na fila se o DC foi recente.",
-  usage: "!dc [usuario]",
+  descriptionKey: "commands.dc.description",
+  usageKey: "commands.dc.usage",
   cooldown: 5000,
 
   async execute(ctx) {
-    const { api, bot, args, sender, senderRoleLevel, reply } = ctx;
+    const { api, bot, args, sender, senderRoleLevel, reply, t } = ctx;
     const targetInput = (args[0] ?? sender.username ?? sender.displayName ?? "")
       .replace(/^@/, "")
       .trim();
 
     if (!targetInput) {
-      await reply("Uso: !dc [usuario]");
+      await reply(t("commands.dc.usageMessage"));
       return;
     }
 
     const user = bot.findRoomUser(targetInput);
     if (!user) {
-      await reply(`Usuario "${targetInput}" nao encontrado na sala.`);
+      await reply(t("commands.dc.userNotFound", { user: targetInput }));
       return;
     }
 
     const isSelf = String(user.userId) === String(sender.userId ?? "");
     if (!isSelf && senderRoleLevel < ROLE_LEVELS.bouncer) {
-      await reply("Sem permissao para usar !dc em outro usuario.");
+      await reply(t("commands.dc.noPermission"));
       return;
     }
 
     const snap = await getWaitlistSnapshot(user.userId);
     if (!snap) {
-      await reply("Sem registro de fila para este usuario.");
+      await reply(t("commands.dc.noSnapshot"));
       return;
     }
 
+    const windowMin = Number(bot.cfg.dcWindowMin ?? DC_MIN_FALLBACK);
+    const dcWindowMs = Math.max(1, windowMin) * 60 * 1000;
     const updatedAt = Number(snap.updated_at ?? snap.updatedAt ?? 0);
-    if (!updatedAt || Date.now() - updatedAt > DC_WINDOW_MS) {
-      await reply("Tempo limite excedido para restaurar a posicao.");
+    if (!updatedAt || Date.now() - updatedAt > dcWindowMs) {
+      await reply(t("commands.dc.expired"));
       return;
     }
 
     let position = Number(snap.position ?? 0);
     if (!Number.isFinite(position) || position < 1) {
-      await reply("Posicao invalida no registro de fila.");
+      await reply(t("commands.dc.invalidPosition"));
       return;
     }
 
@@ -65,9 +67,7 @@ export default {
         : false;
 
       if (!inList) {
-        await reply(
-          "Voce precisa entrar na fila antes de restaurar a posicao com !dc.",
-        );
+        await reply(t("commands.dc.mustJoin"));
         return;
       }
 
@@ -79,11 +79,16 @@ export default {
       const apiPos = position - 1;
       await api.room.moveInWaitlist(bot.cfg.room, Number(user.userId), apiPos);
       await reply(
-        `Usuario ${user.displayName ?? user.username} movido para a posicao ${position}.`,
+        t("commands.dc.moved", {
+          user: user.displayName ?? user.username,
+          position,
+        }),
       );
     } catch (err) {
       await reply(
-        `Erro ao restaurar posicao: ${err.message}. Se precisar, entre na fila e use !dc novamente.`,
+        t("commands.dc.error", {
+          error: err.message,
+        }),
       );
     }
   },

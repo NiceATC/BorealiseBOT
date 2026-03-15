@@ -9,18 +9,18 @@ import { upsertWaitlistSnapshot } from "../../lib/storage.js";
 export default {
   name: "savequeue",
   aliases: ["savewl", "savefila", "cachefila"],
-  description: "Salva a fila atual para uso no comando !dc.",
-  usage: "!savequeue",
+  descriptionKey: "commands.savequeue.description",
+  usageKey: "commands.savequeue.usage",
   cooldown: 5000,
   minRole: "bouncer",
 
   async execute(ctx) {
-    const { api, bot, reply } = ctx;
+    const { api, bot, reply, t } = ctx;
     try {
       const res = await api.room.getWaitlist(bot.cfg.room);
       const waitlist = res?.data?.data?.waitlist ?? res?.data?.waitlist ?? [];
       if (!Array.isArray(waitlist) || waitlist.length === 0) {
-        await reply("Fila vazia.");
+        await reply(t("commands.savequeue.empty"));
         return;
       }
       const entries = waitlist.map((u, idx) => ({
@@ -30,9 +30,17 @@ export default {
         position: idx + 1,
       }));
       await upsertWaitlistSnapshot(entries);
-      await reply(`Fila salva: ${entries.length} usuarios.`);
+      await reply(
+        t("commands.savequeue.saved", {
+          count: entries.length,
+        }),
+      );
     } catch (err) {
-      await reply(`Erro ao salvar fila: ${err.message}`);
+      await reply(
+        t("commands.savequeue.error", {
+          error: err.message,
+        }),
+      );
     }
   },
 };

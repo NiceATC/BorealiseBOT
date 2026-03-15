@@ -39,6 +39,9 @@ BorealiseBOT/
     random.js            ← random helpers
     roulette.js          ← roulette state + close helper
     tenor.js             ← Tenor GIF helper
+  locales/
+    pt-BR.json            ← Portuguese strings
+    en-US.json            ← English strings
   lib/
     api/                 ← complete API call wrappers (all resources)
     bot.js               ← BorealiseBot core (pipeline, REST, dispatch logic)
@@ -68,18 +71,14 @@ BorealiseBOT/
       motd.js            — !motd / !togglemotd
     mod/
       skip.js            — !skip
-      lock.js            — !lock
-      unlock.js          — !unlock
+      lock.js            — !lock / !unlock
       remove.js          — !remove
       move.js            — !move
       swap.js            — !swap
-      timeguard.js       — !timeguard
-      maxlength.js       — !maxlength
+      timeguard.js       — !timeguard / !maxlength
       kick.js            — !kick
-      mute.js            — !mute
-      unmute.js          — !unmute
-      ban.js             — !ban
-      unban.js           — !unban
+      mute.js            — !mute / !unmute
+      ban.js             — !ban / !unban
     queue/
       dc.js              — !dc
       savequeue.js       — !savequeue
@@ -133,8 +132,8 @@ Create `commands/<category>/mycommand.js` — the `CommandRegistry` auto-loads i
 export default {
   name: "greet",
   aliases: ["oi", "hello"],
-  description: "Cumprimentos!",
-  usage: "!greet",
+  descriptionKey: "commands.greet.description",
+  usageKey: "commands.greet.usage",
   cooldown: 5_000, // ms between uses per user (default: 3 000)
   // minRole: "bouncer", // optional: minimum role required
 
@@ -151,10 +150,17 @@ export default {
     // ctx.room       — room slug
     // ctx.reply(txt) — send a chat message
 
-    await ctx.reply(`Olá, @${ctx.sender.username ?? "amigo"}! 👋`);
+    await ctx.reply(
+      ctx.t("commands.greet.reply", {
+        name: ctx.sender.username ?? "amigo",
+      }),
+    );
   },
 };
 ```
+
+`description` / `usage` are still supported as fallbacks, but `descriptionKey` / `usageKey`
+are recommended for i18n.
 
 ---
 
@@ -167,7 +173,7 @@ import { Events } from "@borealise/pipeline";
 
 export default {
   name: "my-event",
-  description: "Does something when a user joins.",
+  descriptionKey: "events.myEvent.description",
   enabled: true, // default enabled state
 
   event: Events.ROOM_USER_JOIN,
@@ -185,7 +191,11 @@ export default {
     // ctx.reply(txt) — send a chat message
     // data           — raw pipeline event payload
 
-    await ctx.reply(`Welcome, ${data.displayName ?? "stranger"}!`);
+    await ctx.reply(
+      ctx.t("events.myEvent.welcome", {
+        name: data.displayName ?? "stranger",
+      }),
+    );
   },
 };
 ```
@@ -210,29 +220,51 @@ bot.events.disable("my-event");
 
 ### Settings (`config.json`)
 
-| Key                    | Default                              | Description                                     |
-| ---------------------- | ------------------------------------ | ----------------------------------------------- |
-| `room`                 | _(required)_                         | Room slug to join                               |
-| `apiUrl`               | `https://prod.borealise.com/api`     | REST API base URL                               |
-| `wsUrl`                | `wss://prod.borealise.com/ws`        | WebSocket pipeline URL                          |
-| `cmdPrefix`            | `!`                                  | Command prefix character                        |
-| `autoWoot`             | `true`                               | Auto-woot every new track                       |
-| `botMessage`           | `"Oi! Sou um bot…"`                  | Reply when @mentioned; leave empty to disable   |
-| `botMentionCooldownMs` | `30000`                              | Min ms between mention replies                  |
-| `greetEnabled`         | `true`                               | Send welcome message on user join               |
-| `greetMessage`         | `"🎵 Bem-vindo(a) à sala, @{name}!"` | Welcome template (`{name}` / `{username}`)      |
-| `greetCooldownMs`      | `3600000`                            | Per-user cooldown for greets (default: 1 hour)  |
-| `motdEnabled`          | `false`                              | Enable MOTD                                     |
-| `motdInterval`         | `5`                                  | Songs between MOTD messages                     |
-| `motd`                 | `"Mensagem do dia"`                  | MOTD content                                    |
-| `intervalMessages`     | `[]`                                 | Interval messages list                          |
-| `messageInterval`      | `5`                                  | Songs between interval messages                 |
-| `blacklistEnabled`     | `true`                               | Enable track blacklist                          |
-| `timeGuardEnabled`     | `false`                              | Enable time guard                               |
-| `maxSongLengthMin`     | `10`                                 | Max song length in minutes                      |
-| `mediaCheckDebug`      | `false`                              | Log details from mediaCheck                     |
+| Key                    | Default                              | Description                                    |
+| ---------------------- | ------------------------------------ | ---------------------------------------------- |
+| `room`                 | _(required)_                         | Room slug to join                              |
+| `locale`               | `pt-BR`                              | Default locale (`pt-BR` or `en-US`)            |
+| `apiUrl`               | `https://prod.borealise.com/api`     | REST API base URL                              |
+| `wsUrl`                | `wss://prod.borealise.com/ws`        | WebSocket pipeline URL                         |
+| `cmdPrefix`            | `!`                                  | Command prefix character                       |
+| `autoWoot`             | `true`                               | Auto-woot every new track                      |
+| `botMessage`           | `"Oi! Sou um bot…"`                  | Reply when @mentioned; leave empty to disable  |
+| `botMentionCooldownMs` | `30000`                              | Min ms between mention replies                 |
+| `greetEnabled`         | `true`                               | Send welcome message on user join              |
+| `greetMessage`         | `"🎵 Bem-vindo(a) à sala, @{name}!"` | Welcome template (`{name}` / `{username}`)     |
+| `greetCooldownMs`      | `3600000`                            | Per-user cooldown for greets (default: 1 hour) |
+| `motdEnabled`          | `false`                              | Enable MOTD                                    |
+| `motdInterval`         | `5`                                  | Songs between MOTD messages                    |
+| `motd`                 | `"Mensagem do dia"`                  | MOTD content                                   |
+| `intervalMessages`     | `[]`                                 | Interval messages list                         |
+| `messageInterval`      | `5`                                  | Songs between interval messages                |
+| `dcWindowMin`          | `10`                                 | Minutes allowed to restore DC position          |
+| `blacklistEnabled`     | `true`                               | Enable track blacklist                         |
+| `timeGuardEnabled`     | `false`                              | Enable time guard                              |
+| `maxSongLengthMin`     | `10`                                 | Max song length in minutes                     |
+| `mediaCheckDebug`      | `false`                              | Log details from mediaCheck                    |
 
 Settings changed via `!settings` are persisted and override `config.json` on startup.
+
+---
+
+## Localization (i18n)
+
+- Set the default locale in `config.json` using `locale` (`pt-BR` or `en-US`).
+- You can switch at runtime with `!settings locale en-US` or `!settings locale pt-BR`.
+- Add/adjust keys in `locales/pt-BR.json` and `locales/en-US.json`.
+
+For localized config messages (like `botMessage`, `greetMessage`, `motd`, `intervalMessages`),
+you can provide an object with locale keys:
+
+```json
+{
+  "botMessage": {
+    "pt-BR": "Oi! Sou um bot.",
+    "en-US": "Hi! I'm a bot."
+  }
+}
+```
 
 ---
 

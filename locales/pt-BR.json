@@ -1,0 +1,515 @@
+{
+    "common": {
+        "you": "você",
+        "someone": "alguém",
+        "song": "música",
+        "network": "rede",
+        "unknownError": "erro desconhecido",
+        "requestFailed": "falha na solicitação"
+    },
+    "banner": {
+        "title": "{name} v{version}"
+    },
+    "index": {
+        "shutdown": "\n[index] {signal} recebido - encerrando...",
+        "shutdownTimeout": "[index] Encerramento excedeu {seconds}s; forçando saída.",
+        "shutdownError": "[index] Erro ao encerrar: {error}",
+        "serverUnavailable": "[index] Servidor indisponível. Tentando novamente em {seconds}s...",
+        "fatalStartup": "[index] Erro fatal ao iniciar: {error}",
+        "uncaughtException": "[index] Exceção não tratada: {error}",
+        "unhandledRejection": "[index] Rejeição não tratada: {error}",
+        "initFailed": "[index] Falha ao iniciar o bot: {error}",
+        "mainFailed": "[index] Falha inesperada: {error}"
+    },
+    "config": {
+        "envMissing": "[config] .env não encontrado em {path}\n         Copie .env.example para .env e preencha suas credenciais.",
+        "configCopied": "[config] config.json não encontrado - copiado de config.example.json.\n         Edite config.json (principalmente 'room') antes de executar.",
+        "configMissing": "[config] config.json não encontrado em {path}\n         Copie config.example.json para config.json e edite-o.",
+        "parseFailed": "[config] Falha ao ler config.json: {error}",
+        "missingEnvVar": "[config] Variável de ambiente obrigatória ausente: {key}",
+        "invalidRoom": "[config] config.json: 'room' deve ser definido com um slug de sala válido."
+    },
+    "commands": {
+        "mod": {
+            "cannotTargetBot": "Não posso usar esse comando no próprio bot."
+        },
+        "registry": {
+            "invalidCommand": "Comando inválido: deve ter \"name\" e \"execute\".",
+            "overwrite": "[CommandRegistry] Sobrescrevendo comando existente: {command}",
+            "botRoleMissingLog": "Cargo do bot insuficiente para {command} (precisa {role}, nível atual {level}).",
+            "botRoleMissingReply": "Preciso do cargo {role} para executar {command}.",
+            "userMissingRoleReply": "{user}, você precisa do cargo {role} para usar {command}.",
+            "cooldownReply": "{user}, aguarde {seconds}s para usar {command} novamente."
+        },
+        "help": {
+            "description": "Lista comandos ou mostra detalhes de um comando.",
+            "usage": "!help [comando]",
+            "notFound": "Comando não encontrado: {name}",
+            "usageLine": "Uso: {usage}",
+            "aliasesLine": "Aliases: {aliases}",
+            "requirementLine": "Cargo exigido: {role}",
+            "list": "Comandos: {list}"
+        },
+        "ping": {
+            "description": "Verifica se o bot está online.",
+            "usage": "!ping",
+            "reply": "Pong, {user}! {ms}ms"
+        },
+        "start": {
+            "description": "Retoma o bot.",
+            "usage": "!start",
+            "reply": {
+                "resumed": "Bot retomado.",
+                "alreadyActive": "O bot já está ativo."
+            }
+        },
+        "stop": {
+            "description": "Pausa o bot.",
+            "usage": "!stop",
+            "reply": {
+                "paused": "Bot pausado.",
+                "alreadyPaused": "O bot já está pausado."
+            }
+        },
+        "reload": {
+            "description": "Reconecta o bot.",
+            "usage": "!reload",
+            "reply": {
+                "loading": "Reconectando...",
+                "error": "Falha ao reconectar: {error}"
+            }
+        },
+        "reloadcmd": {
+            "description": "Recarrega comandos.",
+            "usage": "!reloadcmd",
+            "reply": {
+                "successWithFailures": "Comandos recarregados: {loaded}. Falharam: {failed}.",
+                "success": "Comandos recarregados: {loaded}.",
+                "error": "Falha ao recarregar comandos: {error}"
+            }
+        },
+        "nowplaying": {
+            "description": "Mostra a música atual e reações.",
+            "usage": "!np",
+            "none": "Nenhuma música tocando agora.",
+            "trackLine": "Tocando: {title}{artist}",
+            "djLine": "DJ: {dj}",
+            "reactions": "Reações: 👍 {woots} / 👎 {mehs} / 🔁 {grabs}"
+        },
+        "stats": {
+            "description": "Mostra estatísticas do bot.",
+            "usage": "!stats",
+            "notReady": "Estatísticas ainda não estão prontas.",
+            "uptime": "Tempo online: {uptime}",
+            "woots": "Woots: {count}",
+            "queue": "Fila: {position}/{total}"
+        },
+        "queue": {
+            "description": "Mostra a posição do bot na fila.",
+            "usage": "!queue",
+            "notInQueue": "Não estou na fila.",
+            "next": " — Próximo: {next}",
+            "status": "Posição: {position}/{total}{next}"
+        },
+        "woot": {
+            "description": "Dá woot na música atual.",
+            "usage": "!woot",
+            "noTrack": "Nenhuma música tocando.",
+            "voted": "{user} deu woot em: {title}",
+            "error": "Falha ao votar: {error}"
+        },
+        "blacklist": {
+            "description": "Gerencia a blacklist de músicas.",
+            "usage": "!blacklist <add|remove|list|info> ...",
+            "usageMessage": "Uso: !blacklist <add|remove|list|info> ...",
+            "noTrackInfo": "Sem música atual para info.",
+            "currentInfo": "Atual: {label} ({id})",
+            "noTrackAdd": "Nenhuma música para adicionar.",
+            "already": "Essa faixa já está na blacklist.",
+            "addedSkip": "Adicionada à blacklist; pulando...",
+            "addedSkipError": "Adicionada à blacklist, mas falhou ao pular: {error}",
+            "added": "Adicionada à blacklist.",
+            "removeUsage": "Uso: !blacklist remove <current|source:id>",
+            "removed": "Removida da blacklist.",
+            "empty": "A blacklist está vazia.",
+            "list": "Blacklist ({limit}): {items}",
+            "invalidAction": "Ação inválida. Use add/remove/list/info."
+        },
+        "togglebl": {
+            "description": "Ativa/desativa a blacklist.",
+            "usage": "!togglebl",
+            "enabled": "Blacklist ativada.",
+            "disabled": "Blacklist desativada."
+        },
+        "motd": {
+            "description": "Configura a mensagem do dia.",
+            "usage": "!motd [mensagem|on|off|interval <n>]",
+            "stateOn": "ligado",
+            "stateOff": "desligado",
+            "status": "MOTD {state} | intervalo {interval} | mensagem: {message}",
+            "intervalUsage": "Uso: !motd interval <n>",
+            "intervalUpdated": "Intervalo do MOTD definido para {interval}.",
+            "messageUsage": "Uso: !motd <mensagem>",
+            "updated": "MOTD atualizado.",
+            "enabled": "MOTD ativado.",
+            "disabled": "MOTD desativado."
+        },
+        "togglemotd": {
+            "description": "Ativa/desativa o MOTD.",
+            "usage": "!togglemotd",
+            "enabled": "MOTD ativado.",
+            "disabled": "MOTD desativado."
+        },
+        "skip": {
+            "description": "Pula a faixa atual.",
+            "usage": "!skip [motivo]",
+            "successWithReason": "Faixa pulada. Motivo: {reason}",
+            "success": "Faixa pulada.",
+            "error": "Falha ao pular: {error}"
+        },
+        "lock": {
+            "description": "Trava a fila.",
+            "usage": "!lock",
+            "success": "Fila travada.",
+            "error": "Falha ao travar a fila: {error}"
+        },
+        "unlock": {
+            "description": "Destrava a fila.",
+            "usage": "!unlock",
+            "success": "Fila destravada.",
+            "error": "Falha ao destravar a fila: {error}"
+        },
+        "remove": {
+            "description": "Remove usuário da fila.",
+            "usage": "!remove <usuario>",
+            "usageMessage": "Uso: !remove <usuario>",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "notInQueue": "{user} não está na fila.",
+            "removed": "Removido {user} da fila.",
+            "error": "Falha ao remover: {error}"
+        },
+        "move": {
+            "description": "Move usuário na fila.",
+            "usage": "!move <usuario> <posicao>",
+            "usageMessage": "Uso: !move <usuario> <posicao>",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "moved": "{user} movido para a posição {position}.",
+            "error": "Falha ao mover: {error}"
+        },
+        "swap": {
+            "description": "Troca dois usuários na fila.",
+            "usage": "!swap <usuarioA> <usuarioB>",
+            "usageMessage": "Uso: !swap <usuarioA> <usuarioB>",
+            "userNotFound": "Usuário(s) não encontrado(s).",
+            "notInQueue": "Ambos precisam estar na fila.",
+            "samePosition": "Os usuários já estão na mesma posição.",
+            "success": "Trocados {userA} e {userB}.",
+            "error": "Falha ao trocar: {error}"
+        },
+        "timeguard": {
+            "description": "Ativa/desativa o time guard.",
+            "usage": "!timeguard",
+            "enabled": "Time guard ativado.",
+            "disabled": "Time guard desativado."
+        },
+        "maxlength": {
+            "description": "Define o limite de duração da música.",
+            "usage": "!maxlength <minutos>",
+            "usageMessage": "Uso: !maxlength <minutos>",
+            "updated": "Limite de duração definido para {minutes} min."
+        },
+        "kick": {
+            "description": "Expulsa um usuário.",
+            "usage": "!kick <usuario>",
+            "usageMessage": "Uso: !kick <usuario>",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "roleTooHigh": "Não posso expulsar {user}; cargo alto demais.",
+            "removed": "{user} expulso.",
+            "error": "Falha ao expulsar: {error}"
+        },
+        "mute": {
+            "description": "Silencia um usuário.",
+            "usage": "!mute <usuario> [duracao] [motivo]",
+            "usageMessage": "Uso: !mute <usuario> [duracao] [motivo]",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "roleTooHigh": "Não posso silenciar {user}; cargo alto demais.",
+            "muted": "{user} silenciado",
+            "duration": "por {duration}",
+            "reason": "motivo: {reason}",
+            "error": "Falha ao silenciar: {error}"
+        },
+        "unmute": {
+            "description": "Remove o silêncio.",
+            "usage": "!unmute <usuario>",
+            "usageMessage": "Uso: !unmute <usuario>",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "unmuted": "{user} dessilenciado",
+            "error": "Falha ao dessilenciar: {error}"
+        },
+        "ban": {
+            "description": "Bane um usuário.",
+            "usage": "!ban <usuario> [duracao] [motivo]",
+            "usageMessage": "Uso: !ban <usuario> [duracao] [motivo]",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "roleTooHigh": "Não posso banir {user}; cargo alto demais.",
+            "banned": "{user} banido",
+            "duration": "por {duration}",
+            "reason": "motivo: {reason}",
+            "error": "Falha ao banir: {error}"
+        },
+        "unban": {
+            "description": "Remove o banimento.",
+            "usage": "!unban <usuario>",
+            "usageMessage": "Uso: !unban <usuario>",
+            "notFound": "Banimento não encontrado para {user}.",
+            "removed": "Banimento removido de {user}.",
+            "error": "Falha ao desbanir: {error}"
+        },
+        "dc": {
+            "description": "Restaura a posição do usuário na fila (DC recente).",
+            "usage": "!dc [usuario]",
+            "usageMessage": "Uso: !dc [usuario]",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "noPermission": "Você não tem permissão para mover outro usuário.",
+            "noSnapshot": "Sem snapshot recente para esse usuário.",
+            "expired": "Snapshot expirou.",
+            "invalidPosition": "Posição salva inválida.",
+            "mustJoin": "O usuário precisa estar na fila.",
+            "moved": "Movido {user} para a posição {position}.",
+            "error": "Falha ao restaurar posição: {error}"
+        },
+        "savequeue": {
+            "description": "Salva a fila atual.",
+            "usage": "!savequeue",
+            "empty": "A fila está vazia.",
+            "saved": "Fila salva com {count} entradas.",
+            "error": "Falha ao salvar fila: {error}"
+        },
+        "autowoot": {
+            "description": "Ativa/desativa auto-woot.",
+            "usage": "!autowoot",
+            "enabled": "Auto-woot ativado.",
+            "disabled": "Auto-woot desativado."
+        },
+        "settings": {
+            "description": "Consulta ou altera configurações.",
+            "usage": "!settings <chave> [valor]",
+            "usageMessage": "Uso: !settings <chave> [valor]",
+            "list": "Chaves disponíveis: {keys}",
+            "invalidKey": "Chave inválida.",
+            "value": "{key} = {value}",
+            "notFound": "Sem valor para {key}.",
+            "updated": "{key} atualizado para {value}."
+        },
+        "welcome": {
+            "description": "Ativa/desativa a saudação de entrada.",
+            "usage": "!welcome",
+            "enabled": "Saudação ativada.",
+            "disabled": "Saudação desativada."
+        },
+        "ba": {
+            "description": "Responde com BA.",
+            "usage": "!ba",
+            "reply": "BA!"
+        },
+        "eightball": {
+            "description": "Bola 8 mágica.",
+            "usage": "!8ball <pergunta>",
+            "usageMessage": "Faça uma pergunta.",
+            "reply": "{question} — {answer}",
+            "responses": [
+                "Sim.",
+                "Não.",
+                "Talvez.",
+                "Pergunte novamente mais tarde.",
+                "Com certeza.",
+                "De jeito nenhum.",
+                "Muito provável.",
+                "Pouco provável.",
+                "Sem dúvidas.",
+                "Não conte com isso.",
+                "Sinais apontam que sim.",
+                "Não posso prever agora."
+            ]
+        },
+        "cookie": {
+            "description": "Dá um biscoito.",
+            "usage": "!cookie [usuario]",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "selfLines": [
+                "{sender} pegou um biscoito para si 🍪",
+                "{sender}, aqui está seu biscoito 🍪",
+                "{sender} se presenteou com um biscoito 🍪"
+            ],
+            "giftLines": [
+                "{sender} deu um biscoito para {target} 🍪",
+                "{sender} entregou um biscoito a {target} 🍪",
+                "{sender} compartilhou um biscoito com {target} 🍪"
+            ]
+        },
+        "ghostbuster": {
+            "description": "Verifica se alguém está na sala.",
+            "usage": "!ghostbuster <usuario>",
+            "present": "{name} está na sala.",
+            "absent": "{name} não está na sala."
+        },
+        "gif": {
+            "description": "Busca um GIF.",
+            "usage": "!gif <termo>",
+            "notFound": "Nenhum GIF encontrado.",
+            "result": "Aqui vai: {url}",
+            "error": "Erro ao buscar GIF: {error}"
+        },
+        "roulette": {
+            "description": "Abre a roleta.",
+            "usage": "!roulette",
+            "alreadyOpen": "A roleta já está aberta.",
+            "opened": "Roleta aberta por {seconds}s. Use !join."
+        },
+        "join": {
+            "description": "Entra na roleta.",
+            "usage": "!join",
+            "closed": "A roleta está fechada.",
+            "noUser": "Não consegui identificar você.",
+            "mustBeInQueue": "Você precisa estar na fila para entrar.",
+            "waitlistError": "Falha ao verificar a fila: {error}",
+            "alreadyIn": "Você já está na roleta.",
+            "joined": "{name} entrou na roleta."
+        },
+        "leave": {
+            "description": "Sai da roleta.",
+            "usage": "!leave",
+            "closed": "A roleta está fechada.",
+            "noUser": "Não consegui identificar você.",
+            "notIn": "Você não está na roleta.",
+            "left": "{name} saiu da roleta."
+        },
+        "thor": {
+            "description": "Roda o martelo do Thor na fila.",
+            "usage": "!thor",
+            "noUser": "Não consegui identificar você.",
+            "apiUnavailable": "API da fila indisponível.",
+            "noPermission": "Eu preciso de cargo bouncer para isso.",
+            "waitlistError": "Falha ao buscar a fila: {error}",
+            "mustBeInQueue": "Você precisa estar na fila.",
+            "moveError": "Falha ao mover {user}: {error}",
+            "removeError": "Falha ao remover {user}: {error}",
+            "goodLines": [
+                "{name} foi abençoado e vai para o topo! ⚡",
+                "{name} subiu para o topo da fila!",
+                "{name} ganhou o topo da fila!"
+            ],
+            "neutralLines": [
+                "{name} escapou dessa vez.",
+                "{name} ficou no mesmo lugar.",
+                "{name} foi poupado."
+            ],
+            "badLines": [
+                "{name} levou um raio e saiu da fila! ⚡",
+                "{name} foi removido da fila!",
+                "{name} perdeu a vez e saiu da fila!"
+            ]
+        }
+    },
+    "events": {
+        "registry": {
+            "invalidHandler": "Handler inválido: deve ter \"name\" e \"handle\".",
+            "missingEvent": "Handler \"{name}\" deve especificar \"event\" ou \"events\".",
+            "overwrite": "[EventRegistry] Sobrescrevendo handler existente: {name}",
+            "handlerError": "[EventRegistry] Erro no handler \"{name}\": {error}"
+        },
+        "greet": {
+            "description": "Envia uma mensagem de boas-vindas quando um usuário entra."
+        },
+        "timeGuard": {
+            "description": "Pula músicas acima do limite configurado.",
+            "skip": "Música longa ({minutes} min): {label}. Pulando..."
+        },
+        "mediaCheck": {
+            "description": "Verifica bloqueios/idade do YouTube e pula quando necessário.",
+            "skip": "Pulando {label}: {reason}{detail}.",
+            "reason": {
+                "age": "restrito por idade",
+                "unavailable": "indisponível"
+            },
+            "log": {
+                "apiHttp": "[mediaCheck] API retornou HTTP {status}",
+                "apiInvalid": "[mediaCheck] Resposta da API inválida",
+                "apiError": "[mediaCheck] Erro na API: {error}",
+                "noId": "[mediaCheck] Não foi possível extrair o ID do vídeo. Chaves: {keys}",
+                "checking": "[mediaCheck] Verificando source={source} id={id} title={title}",
+                "ytdlError": "[mediaCheck] Erro do ytdl: {error}",
+                "ytdlStatus": "[mediaCheck] ytdl status={status} ageRestricted={ageRestricted} embeddable={embeddable} reason={reason}",
+                "ytdlLoginRequired": "[mediaCheck] ytdl LOGIN_REQUIRED; permitindo.",
+                "ytdlAllowed": "[mediaCheck] ytdl permitiu reprodução.",
+                "ytdlInconclusive": "[mediaCheck] ytdl inconclusivo; usando API.",
+                "apiUnavailable": "[mediaCheck] API indisponível.",
+                "apiResult": "[mediaCheck] Resultado da API blocked={blocked} ageRestricted={ageRestricted} ageLimit={ageLimit} availability={availability}",
+                "apiAllowed": "[mediaCheck] API permitiu reprodução."
+            }
+        },
+        "waitlistSnapshot": {
+            "description": "Salva snapshots da fila para !dc."
+        }
+    },
+    "helpers": {
+        "roulette": {
+            "closed": {
+                "noParticipants": "Roleta encerrada: ninguém participou.",
+                "apiUnavailable": "Roleta encerrada: API indisponível.",
+                "waitlistError": "Roleta encerrada: erro ao buscar fila: {error}",
+                "emptyQueue": "Roleta encerrada: fila vazia.",
+                "noEligible": "Roleta encerrada: nenhum participante elegível.",
+                "noTarget": "Roleta encerrada: nenhum alvo encontrado.",
+                "noPermission": "Não tenho permissão para mover/remover {user}."
+            },
+            "moveError": "Falha ao mover {user}: {error}",
+            "removeError": "Falha ao remover {user}: {error}",
+            "moveLines": [
+                "{name} girou e caiu na posição {pos}!",
+                "{name} foi movido para a posição {pos}.",
+                "{name} foi enviado para o lugar {pos}."
+            ],
+            "shotLines": [
+                "{name} levou um tiro e saiu da fila!",
+                "{name} foi removido da fila!",
+                "{name} está fora da fila!"
+            ]
+        }
+    },
+    "logs": {
+        "modules": {
+            "commandsLoaded": "Comandos carregados: {loaded} (falhas: {failed}).",
+            "commandFailures": "Falhas ao carregar comandos: {files}",
+            "eventsLoaded": "Eventos carregados: {loaded} (falhas: {failed}).",
+            "eventFailures": "Falhas ao carregar eventos: {files}"
+        },
+        "bot": {
+            "paused": "Bot pausado.",
+            "resumed": "Bot retomado.",
+            "stopped": "Bot parado.",
+            "loggingIn": "Fazendo login como {email}...",
+            "loginFailed": "Falha no login (status: {status}): {error}",
+            "missingAccessToken": "Resposta de login sem access token.",
+            "loggedIn": "Logado como {username} (id: {userId}).",
+            "identityFallback": "Identidade obtida via auth.me: {username}",
+            "authMeFailed": "auth.me falhou: {error}",
+            "pipelineReady": "Pipeline pronto (sessao: {session}) para sala {room}.",
+            "joinFailed": "Falha ao entrar na sala: {error}",
+            "disconnected": "Desconectado (codigo {code}{reason}).",
+            "reconnected": "Reconectado.",
+            "pipelineError": "Erro no pipeline: {error}",
+            "roomRole": "Cargo do bot na sala: {role}",
+            "joinedRoom": "Entrou na sala: {room}",
+            "onlineAnnouncement": "✅ {name} online (v{version})",
+            "onlineAnnounceFailed": "Falha ao anunciar online: {error}",
+            "roleUpdated": "Cargo do bot atualizado: {role}",
+            "commandError": "Erro no comando {command}: {error}",
+            "voteFailed": "Falha ao votar: {error}",
+            "mentionFailed": "Falha ao enviar resposta de menção: {error}",
+            "blacklistNoPermission": "Pulo da blacklist bloqueado: o bot não tem permissão.",
+            "blacklistSkipMessage": "Faixa na blacklist: {label}. Pulando...",
+            "blacklistSkipFailed": "Falha ao pular faixa da blacklist: {error}"
+        }
+    }
+}

@@ -11,15 +11,15 @@
 export default {
   name: "woot",
   aliases: ["w", "voto", "votar"],
-  description: "Força o bot a dar woot na música atual.",
-  usage: "!woot",
+  descriptionKey: "commands.woot.description",
+  usageKey: "commands.woot.usage",
   cooldown: 10_000,
 
   async execute(ctx) {
-    const { bot, reply, sender } = ctx;
+    const { bot, reply, sender, t } = ctx;
 
     if (!bot._currentTrack?.title) {
-      await reply("Nenhuma música tocando para votar.");
+      await reply(t("commands.woot.noTrack"));
       return;
     }
 
@@ -27,10 +27,13 @@ export default {
       await bot._api.room.vote(bot.cfg.room, "woot");
       bot._wootCount++;
       await reply(
-        `👍 Woot! "${bot._currentTrack.title}" — votado por @${sender.username ?? "you"}`,
+        t("commands.woot.voted", {
+          title: bot._currentTrack.title,
+          user: sender.username ?? t("common.you"),
+        }),
       );
     } catch (err) {
-      await reply(`Não foi possível votar: ${err.message}`);
+      await reply(t("commands.woot.error", { error: err.message }));
     }
   },
 };

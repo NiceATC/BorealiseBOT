@@ -5,18 +5,18 @@
 export default {
   name: "stop",
   aliases: ["pause", "parar", "pausar"],
-  description: "Pausa o bot sem desconectar.",
-  usage: "!stop",
+  descriptionKey: "commands.stop.description",
+  usageKey: "commands.stop.usage",
   cooldown: 5000,
   minRole: "manager",
 
   async execute(ctx) {
-    const { bot, reply } = ctx;
+    const { bot, reply, t } = ctx;
     const changed = bot.pause();
     if (changed) {
-      await reply("Bot pausado. Use !start para voltar.");
+      await reply(t("commands.stop.reply.paused"));
       return;
     }
-    await reply("Bot ja esta pausado.");
+    await reply(t("commands.stop.reply.alreadyPaused"));
   },
 };

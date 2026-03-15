@@ -4,31 +4,42 @@
 
 import { extractDurationAndReason } from "../../helpers/duration.js";
 
-export default {
+function isBotTarget(bot, user) {
+  return bot?.isBotUser?.(user?.userId) ?? false;
+}
+
+const mute = {
   name: "mute",
   aliases: ["silenciar", "calar"],
-  description: "Silencia um usuario no chat. Requer cargo bouncer ou superior.",
-  usage: "!mute <usuario> [duracao] [motivo]  · ex: !mute user h2 spam",
+  descriptionKey: "commands.mute.description",
+  usageKey: "commands.mute.usage",
   cooldown: 5_000,
   minRole: "bouncer",
 
   async execute(ctx) {
-    const { api, bot, args, reply } = ctx;
+    const { api, bot, args, reply, t } = ctx;
     const target = (args[0] ?? "").replace(/^@/, "").trim();
     if (!target) {
-      await reply("Uso: !mute <usuario> [duracao] [motivo]");
+      await reply(t("commands.mute.usageMessage"));
       return;
     }
 
     const user = bot.findRoomUser(target);
     if (!user) {
-      await reply(`Usuario "${target}" nao encontrado na sala.`);
+      await reply(t("commands.mute.userNotFound", { user: target }));
+      return;
+    }
+
+    if (isBotTarget(bot, user)) {
+      await reply(t("commands.mod.cannotTargetBot"));
       return;
     }
 
     if (bot.getUserRoleLevel(user.userId) >= bot.getBotRoleLevel()) {
       await reply(
-        `Nao posso silenciar ${user.displayName ?? user.username} — o cargo dele e igual ou superior ao meu.`,
+        t("commands.mute.roleTooHigh", {
+          user: user.displayName ?? user.username,
+        }),
       );
       return;
     }
@@ -41,12 +52,58 @@ export default {
 
     try {
       await api.room.mute(bot.cfg.room, user.userId, data);
-      const parts = [`🔇 ${user.displayName ?? user.username} foi silenciado`];
-      if (label) parts.push(`por ${label}`);
-      if (reason) parts.push(`— ${reason}`);
+      const parts = [
+        t("commands.mute.muted", {
+          user: user.displayName ?? user.username,
+        }),
+      ];
+      if (label) parts.push(t("commands.mute.duration", { duration: label }));
+      if (reason) parts.push(t("commands.mute.reason", { reason }));
       await reply(parts.join(" ") + ".");
     } catch (err) {
-      await reply(`Erro ao silenciar: ${err.message}`);
+      await reply(t("commands.mute.error", { error: err.message }));
     }
   },
 };
+
+const unmute = {
+  name: "unmute",
+  aliases: ["dessilenciar"],
+  descriptionKey: "commands.unmute.description",
+  usageKey: "commands.unmute.usage",
+  cooldown: 5_000,
+  minRole: "bouncer",
+
+  async execute(ctx) {
+    const { api, bot, args, reply, t } = ctx;
+    const target = (args[0] ?? "").replace(/^@/, "").trim();
+    if (!target) {
+      await reply(t("commands.unmute.usageMessage"));
+      return;
+    }
+
+    const user = bot.findRoomUser(target);
+    if (!user) {
+      await reply(t("commands.unmute.userNotFound", { user: target }));
+      return;
+    }
+
+    if (isBotTarget(bot, user)) {
+      await reply(t("commands.mod.cannotTargetBot"));
+      return;
+    }
+
+    try {
+      await api.room.unmute(bot.cfg.room, user.userId);
+      await reply(
+        t("commands.unmute.unmuted", {
+          user: user.displayName ?? user.username,
+        }),
+      );
+    } catch (err) {
+      await reply(t("commands.unmute.error", { error: err.message }));
+    }
+  },
+};
+
+export default [mute, unmute];

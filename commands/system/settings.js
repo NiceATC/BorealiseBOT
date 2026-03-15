@@ -11,28 +11,30 @@ const ALLOWED_KEYS = new Set(RUNTIME_SETTING_KEYS);
 export default {
   name: "settings",
   aliases: ["config", "set"],
-  description: "Consulta ou altera configuracoes persistentes do bot.",
-  usage: "!settings <chave> [valor]",
+  descriptionKey: "commands.settings.description",
+  usageKey: "commands.settings.usage",
   cooldown: 3000,
   minRole: "manager",
 
   async execute(ctx) {
-    const { args, reply, bot } = ctx;
+    const { args, reply, bot, t } = ctx;
     const key = args[0];
     if (!key) {
-      await reply("Uso: !settings <chave> [valor]");
+      await reply(t("commands.settings.usageMessage"));
       return;
     }
 
     if (key === "list") {
-      await reply(`Chaves disponiveis: ${RUNTIME_SETTING_KEYS.join(", ")}`);
+      await reply(
+        t("commands.settings.list", {
+          keys: RUNTIME_SETTING_KEYS.join(", "),
+        }),
+      );
       return;
     }
 
     if (!ALLOWED_KEYS.has(key)) {
-      await reply(
-        `Chave invalida. Use !settings list para ver as chaves disponiveis.`,
-      );
+      await reply(t("commands.settings.invalidKey"));
       return;
     }
     if (args.length === 1) {
@@ -40,8 +42,11 @@ export default {
       const val = await getSetting(key, bot.cfg[key]);
       await reply(
         val !== undefined
-          ? `Configuracao ${key}: ${JSON.stringify(val)}`
-          : `Chave ${key} nao encontrada.`,
+          ? t("commands.settings.value", {
+              key,
+              value: JSON.stringify(val),
+            })
+          : t("commands.settings.notFound", { key }),
       );
       return;
     }
@@ -51,7 +56,10 @@ export default {
     await setSetting(key, value);
     bot.updateConfig(key, value);
     await reply(
-      `Configuracao ${key} atualizada para: ${JSON.stringify(value)}`,
+      t("commands.settings.updated", {
+        key,
+        value: JSON.stringify(value),
+      }),
     );
   },
 };

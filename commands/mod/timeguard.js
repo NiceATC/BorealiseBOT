@@ -4,19 +4,49 @@
 
 import { setSetting } from "../../lib/storage.js";
 
-export default {
+const timeguard = {
   name: "timeguard",
   aliases: ["tg"],
-  description: "Ativa ou desativa o limite de tempo de musica.",
-  usage: "!timeguard",
+  descriptionKey: "commands.timeguard.description",
+  usageKey: "commands.timeguard.usage",
   cooldown: 5_000,
   minRole: "bouncer",
 
   async execute(ctx) {
-    const { bot, reply } = ctx;
+    const { bot, reply, t } = ctx;
     const enabled = !bot.cfg.timeGuardEnabled;
     bot.updateConfig("timeGuardEnabled", enabled);
     await setSetting("timeGuardEnabled", enabled);
-    await reply(`Timeguard ${enabled ? "ativado" : "desativado"}.`);
+    await reply(
+      t(enabled ? "commands.timeguard.enabled" : "commands.timeguard.disabled"),
+    );
   },
 };
+
+const maxlength = {
+  name: "maxlength",
+  aliases: ["maxlen", "maxsong"],
+  descriptionKey: "commands.maxlength.description",
+  usageKey: "commands.maxlength.usage",
+  cooldown: 5_000,
+  minRole: "manager",
+
+  async execute(ctx) {
+    const { bot, args, reply, t } = ctx;
+    const minutes = Number(args[0]);
+    if (!Number.isFinite(minutes) || minutes < 1) {
+      await reply(t("commands.maxlength.usageMessage"));
+      return;
+    }
+    const value = Math.floor(minutes);
+    bot.updateConfig("maxSongLengthMin", value);
+    await setSetting("maxSongLengthMin", value);
+    await reply(
+      t("commands.maxlength.updated", {
+        minutes: value,
+      }),
+    );
+  },
+};
+
+export default [timeguard, maxlength];

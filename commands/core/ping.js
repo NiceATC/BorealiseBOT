@@ -7,14 +7,18 @@
 export default {
   name: "ping",
   aliases: ["pong"],
-  description: "Verifica se o bot está online.",
-  usage: "!ping",
+  descriptionKey: "commands.ping.description",
+  usageKey: "commands.ping.usage",
   cooldown: 5_000,
 
   async execute(ctx) {
     const start = Date.now();
+    const user = ctx.sender.username ?? ctx.t("common.you");
     await ctx.reply(
-      `@${ctx.sender.username ?? "you"} Pong! 🏓 (${Date.now() - start}ms)`,
+      ctx.t("commands.ping.reply", {
+        user,
+        ms: Date.now() - start,
+      }),
     );
   },
 };

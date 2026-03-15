@@ -5,52 +5,34 @@ import { getRoleLevel } from "../../lib/permissions.js";
 const GOOD_CHANCE = 3;
 const NEUTRAL_CHANCE = 27;
 
-const THOR_GOOD_LINES = [
-  "Thor sorriu para {name}. Voce sobe para o topo da fila.",
-  "O martelo aprovou {name}. Indo para a posicao 1.",
-  "Raro! Thor favoreceu {name}. Posicao 1 agora.",
-];
-
-const THOR_NEUTRAL_LINES = [
-  "Thor esta calmo. Nada muda.",
-  "O martelo dorme. Fila intacta.",
-  "Thor observou em silencio. Nada aconteceu.",
-];
-
-const THOR_BAD_LINES = [
-  "Thor ficou bravo. {name} saiu da fila.",
-  "Relampagos! {name} perdeu a vaga na fila.",
-  "O martelo falou. {name} foi removido da fila.",
-];
-
 function formatThorLine(line, name) {
   return line.replaceAll("{name}", name);
 }
 
 export default {
   name: "thor",
-  description: "Teste sua sorte com o martelo do Thor.",
-  usage: "!thor",
+  descriptionKey: "commands.thor.description",
+  usageKey: "commands.thor.usage",
   cooldown: 1000_000,
 
   async execute(ctx) {
-    const { bot, api, sender, reply } = ctx;
+    const { bot, api, sender, reply, t, tArray } = ctx;
     const userId = sender.userId != null ? String(sender.userId) : "";
-    const name = sender.username ?? sender.displayName ?? "alguem";
+    const name = sender.username ?? sender.displayName ?? t("common.someone");
     const tag = `@${name}`;
 
     if (!userId) {
-      await reply("Nao foi possivel identificar o usuario.");
+      await reply(t("commands.thor.noUser"));
       return;
     }
 
     if (!api?.room?.getWaitlist) {
-      await reply("API indisponivel.");
+      await reply(t("commands.thor.apiUnavailable"));
       return;
     }
 
     if (bot.getBotRoleLevel() < getRoleLevel("bouncer")) {
-      await reply("Nao tenho permissao para mover/remover da fila.");
+      await reply(t("commands.thor.noPermission"));
       return;
     }
 
@@ -58,7 +40,7 @@ export default {
     try {
       waitlist = await getWaitlist(api, bot.cfg.room);
     } catch (err) {
-      await reply(`Nao consegui ler a fila: ${err.message}`);
+      await reply(t("commands.thor.waitlistError", { error: err.message }));
       return;
     }
 
@@ -66,7 +48,7 @@ export default {
       (u) => String(u.id ?? u.userId ?? u.user_id ?? "") === userId,
     );
     if (!inList) {
-      await reply("Voce precisa estar na fila para usar !thor.");
+      await reply(t("commands.thor.mustBeInQueue"));
       return;
     }
 
@@ -74,26 +56,39 @@ export default {
     if (roll < GOOD_CHANCE) {
       try {
         await api.room.moveInWaitlist(bot.cfg.room, Number(userId), 0);
-        const msg = formatThorLine(pickRandom(THOR_GOOD_LINES), tag);
+        const msg = formatThorLine(
+          pickRandom(tArray("commands.thor.goodLines")) ?? "",
+          tag,
+        );
         await reply(msg);
       } catch (err) {
-        await reply(`Falha ao mover ${tag}: ${err.message}`);
+        await reply(
+          t("commands.thor.moveError", { user: tag, error: err.message }),
+        );
       }
       return;
     }
 
     if (roll < GOOD_CHANCE + NEUTRAL_CHANCE) {
-      const msg = formatThorLine(pickRandom(THOR_NEUTRAL_LINES), tag);
+      const msg = formatThorLine(
+        pickRandom(tArray("commands.thor.neutralLines")) ?? "",
+        tag,
+      );
       await reply(msg);
       return;
     }
 
     try {
       await api.room.removeFromWaitlist(bot.cfg.room, Number(userId));
-      const msg = formatThorLine(pickRandom(THOR_BAD_LINES), tag);
+      const msg = formatThorLine(
+        pickRandom(tArray("commands.thor.badLines")) ?? "",
+        tag,
+      );
       await reply(msg);
     } catch (err) {
-      await reply(`Falha ao remover ${tag}: ${err.message}`);
+      await reply(
+        t("commands.thor.removeError", { user: tag, error: err.message }),
+      );
     }
   },
 };

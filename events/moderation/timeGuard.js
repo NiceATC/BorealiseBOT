@@ -9,11 +9,11 @@ import { getRoleLevel } from "../../lib/permissions.js";
 
 export default {
   name: "timeGuard",
-  description: "Pula musicas mais longas que o limite configurado.",
+  descriptionKey: "events.timeGuard.description",
   event: Events.ROOM_DJ_ADVANCE,
 
   async handle(ctx, data) {
-    const { bot, api, reply } = ctx;
+    const { bot, t } = ctx;
     if (!bot.cfg.timeGuardEnabled) return;
 
     const maxMin = Number(bot.cfg.maxSongLengthMin) || 0;
@@ -28,17 +28,17 @@ export default {
 
     if (bot.getBotRoleLevel() < getRoleLevel("bouncer")) return;
 
-    const title = media.title ?? bot._currentTrack?.title ?? "musica";
+    const title = media.title ?? bot._currentTrack?.title ?? t("common.song");
     const artist =
       media.artist ?? media.artistName ?? bot._currentTrack?.artist ?? "";
     const label = artist ? `${artist} - ${title}` : title;
     const mins = Math.ceil(duration / 60);
 
-    try {
-      await reply(`Musica muito longa (${mins} min). Pulando: ${label}.`);
-      await api.room.skipTrack(bot.cfg.room);
-    } catch {
-      // best-effort
-    }
+    await bot.safeSkip({
+      message: t("events.timeGuard.skip", {
+        minutes: mins,
+        label,
+      }),
+    });
   },
 };

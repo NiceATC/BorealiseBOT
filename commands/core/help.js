@@ -5,40 +5,66 @@
  * !help <name>   — show detailed usage for a specific command
  */
 
+import { ROLE_LEVELS } from "../../lib/permissions.js";
+
 export default {
   name: "help",
   aliases: ["comandos", "commands", "ajuda"],
-  description:
-    "Lista os comandos disponíveis ou mostra detalhes de um comando.",
-  usage: "!help [comando]",
+  descriptionKey: "commands.help.description",
+  usageKey: "commands.help.usage",
   cooldown: 5_000,
 
   async execute(ctx) {
-    const { args, bot, reply } = ctx;
+    const { args, bot, reply, t, senderRoleLevel } = ctx;
+
+    const getDesc = (cmd) =>
+      cmd.descriptionKey ? t(cmd.descriptionKey) : (cmd.description ?? "");
+    const getUsage = (cmd) =>
+      cmd.usageKey ? t(cmd.usageKey) : (cmd.usage ?? "");
 
     if (args.length > 0) {
       // Detailed help for one command
       const cmd = bot.commands.resolve(args[0].toLowerCase());
       if (!cmd) {
-        await reply(`Comando "!${args[0]}" não encontrado.`);
+        await reply(t("commands.help.notFound", { name: args[0] }));
         return;
       }
-      const lines = [`!${cmd.name} — ${cmd.description}`];
-      if (cmd.usage) lines.push(`Uso: ${cmd.usage}`);
-      if (cmd.aliases?.length)
-        lines.push(`Aliases: ${cmd.aliases.map((a) => `!${a}`).join(", ")}`);
-      if (cmd.minRole) lines.push(`Requer: ${cmd.minRole} ou superior`);
+      const lines = [`!${cmd.name} — ${getDesc(cmd)}`];
+      const usage = getUsage(cmd);
+      if (usage) lines.push(t("commands.help.usageLine", { usage }));
+      if (cmd.aliases?.length) {
+        lines.push(
+          t("commands.help.aliasesLine", {
+            aliases: cmd.aliases.map((a) => `!${a}`).join(", "),
+          }),
+        );
+      }
+      if (cmd.minRole) {
+        lines.push(
+          t("commands.help.requirementLine", {
+            role: cmd.minRole,
+          }),
+        );
+      }
       await reply(lines.join(" | "));
       return;
     }
 
     // List all commands
+    const userLevel = senderRoleLevel ?? 0;
     const list = bot.commands.all
+      .filter((c) => {
+        if (!c.minRole) return true;
+        const required = ROLE_LEVELS[c.minRole.toLowerCase()] ?? 0;
+        return userLevel >= required;
+      })
       .map((c) => `!${c.name}`)
       .sort()
       .join("  ");
     await reply(
-      `Comandos: ${list}  •  Use !help <comando> para mais detalhes.`,
+      t("commands.help.list", {
+        list,
+      }),
     );
   },
 };

@@ -21,8 +21,7 @@ import { Events } from "@borealise/pipeline";
 
 export default {
   name: "greet",
-  description:
-    "Saúda novos usuários quando entram na sala. Configurável via GREET_* no .env.",
+  descriptionKey: "events.greet.description",
   enabled: true,
 
   event: Events.ROOM_USER_JOIN,
@@ -48,10 +47,10 @@ export default {
 
     if (!display) return;
 
-    const message = bot.cfg.greetMessage
+    const template = String(bot.localizeValue(bot.cfg.greetMessage) ?? "")
       .replace(/{name}/g, display)
       .replace(/{username}/g, username ?? display);
 
-    await reply(message);
+    await reply(template);
   },
 };

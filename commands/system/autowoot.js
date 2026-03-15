@@ -9,16 +9,18 @@ import { setSetting } from "../../lib/storage.js";
 export default {
   name: "autowoot",
   aliases: ["aw"],
-  description: "Ativa ou desativa o auto-woot do bot.",
-  usage: "!autowoot",
+  descriptionKey: "commands.autowoot.description",
+  usageKey: "commands.autowoot.usage",
   cooldown: 5000,
   minRole: "manager",
 
   async execute(ctx) {
-    const { bot, reply } = ctx;
+    const { bot, reply, t } = ctx;
     const next = !bot.cfg.autoWoot;
     bot.updateConfig("autoWoot", next);
     await setSetting("autoWoot", next);
-    await reply(`Auto-woot ${next ? "ativado" : "desativado"}.`);
+    await reply(
+      t(next ? "commands.autowoot.enabled" : "commands.autowoot.disabled"),
+    );
   },
 };

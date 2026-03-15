@@ -88,8 +88,9 @@ function isYoutubeSource(media) {
   return source.includes("youtube");
 }
 
-function getLabel(media, bot) {
-  const title = media?.title ?? bot?._currentTrack?.title ?? "musica";
+function getLabel(media, bot, t) {
+  const fallback = t ? t("common.song") : (bot?.t?.("common.song") ?? "song");
+  const title = media?.title ?? bot?._currentTrack?.title ?? fallback;
   const artist =
     media?.artist ??
     media?.artistName ??
@@ -116,7 +117,7 @@ function getPlayability(info) {
   };
 }
 
-async function checkWithApi(videoId, debug) {
+async function checkWithApi(videoId, debug, t) {
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), CHECK_API_TIMEOUT_MS);
   const url = `${CHECK_API_BASE}${encodeURIComponent(videoId)}`;
@@ -125,13 +126,15 @@ async function checkWithApi(videoId, debug) {
     const res = await fetch(url, { signal: controller.signal });
 
     if (!res.ok) {
-      if (debug) console.log(`[mediaCheck] api http ${res.status}`);
+      if (debug) {
+        console.log(t("events.mediaCheck.log.apiHttp", { status: res.status }));
+      }
       return null;
     }
 
     const data = await res.json().catch(() => null);
     if (!data || typeof data !== "object") {
-      if (debug) console.log("[mediaCheck] api invalid response");
+      if (debug) console.log(t("events.mediaCheck.log.apiInvalid"));
       return null;
     }
 
@@ -145,7 +148,7 @@ async function checkWithApi(videoId, debug) {
     if (debug) {
       const label =
         err?.name === "AbortError" ? "timeout" : (err?.message ?? err);
-      console.log(`[mediaCheck] api error: ${label}`);
+      console.log(t("events.mediaCheck.log.apiError", { error: label }));
     }
     return null;
   } finally {
@@ -155,11 +158,11 @@ async function checkWithApi(videoId, debug) {
 
 export default {
   name: "mediaCheck",
-  description: "Verifica indisponibilidade e restricao de idade no YouTube.",
+  descriptionKey: "events.mediaCheck.description",
   event: Events.ROOM_DJ_ADVANCE,
 
   async handle(ctx, data) {
-    const { bot, api, reply } = ctx;
+    const { bot, t } = ctx;
     const debug = Boolean(bot?.cfg?.mediaCheckDebug);
     if (bot.getBotRoleLevel() < getRoleLevel("bouncer")) return;
 
@@ -171,7 +174,9 @@ export default {
     if (!videoId) {
       if (debug) {
         console.log(
-          `[mediaCheck] No YouTube id found. Keys: ${Object.keys(media).join(", ")}`,
+          t("events.mediaCheck.log.noId", {
+            keys: Object.keys(media).join(", "),
+          }),
         );
       }
       return;
@@ -180,17 +185,24 @@ export default {
     if (debug) {
       const title = media?.title ?? "";
       const source = media?.source ?? media?.platform ?? "";
-      console.log(`[mediaCheck] Checking ${source} ${videoId} ${title}`);
+      console.log(
+        t("events.mediaCheck.log.checking", {
+          source,
+          id: videoId,
+          title,
+        }),
+      );
     }
 
     async function skipTrack(reasonText, detail) {
-      const label = getLabel(media, bot);
-      try {
-        await reply(`Musica ${reasonText}${detail}. Pulando: ${label}.`);
-        await api.room.skipTrack(bot.cfg.room);
-      } catch {
-        // best-effort
-      }
+      const label = getLabel(media, bot, t);
+      await bot.safeSkip({
+        message: t("events.mediaCheck.skip", {
+          reason: reasonText,
+          detail,
+          label,
+        }),
+      });
     }
 
     const url = `https://www.youtube.com/watch?v=${videoId}`;
@@ -199,7 +211,9 @@ export default {
       info = await ytdl.getBasicInfo(url);
     } catch (err) {
       const msg = String(err?.message ?? "");
-      if (debug) console.log(`[mediaCheck] ytdl error: ${msg}`);
+      if (debug) {
+        console.log(t("events.mediaCheck.log.ytdlError", { error: msg }));
+      }
     }
 
     if (info) {
@@ -215,30 +229,42 @@ export default {
 
       if (debug) {
         console.log(
-          `[mediaCheck] ytdl status=${status} ageRestricted=${ageRestricted} embeddable=${playableInEmbed} reason=${reason}`,
+          t("events.mediaCheck.log.ytdlStatus", {
+            status,
+            ageRestricted,
+            embeddable: playableInEmbed,
+            reason,
+          }),
         );
       }
 
       if (isLoginRequired && !restricted) {
         if (debug) {
-          console.log("[mediaCheck] ytdl login_required; falling back to api");
+          console.log(t("events.mediaCheck.log.ytdlLoginRequired"));
         }
-      } else if (restricted || blockedByStatus || blockedByEmbed || blockedByFlags) {
-        const reasonText = restricted ? "restricao de idade" : "indisponivel";
+      } else if (
+        restricted ||
+        blockedByStatus ||
+        blockedByEmbed ||
+        blockedByFlags
+      ) {
+        const reasonText = restricted
+          ? t("events.mediaCheck.reason.age")
+          : t("events.mediaCheck.reason.unavailable");
         const detail = reason ? ` (${reason})` : "";
         await skipTrack(reasonText, detail);
         return;
       } else if (status === "OK") {
-        if (debug) console.log("[mediaCheck] allowed by ytdl");
+        if (debug) console.log(t("events.mediaCheck.log.ytdlAllowed"));
         return;
       } else if (debug) {
-        console.log("[mediaCheck] ytdl inconclusive; falling back to api");
+        console.log(t("events.mediaCheck.log.ytdlInconclusive"));
       }
     }
 
-    const apiResult = await checkWithApi(videoId, debug);
+    const apiResult = await checkWithApi(videoId, debug, t);
     if (!apiResult) {
-      if (debug) console.log("[mediaCheck] api unavailable; allowing");
+      if (debug) console.log(t("events.mediaCheck.log.apiUnavailable"));
       return;
     }
 
@@ -252,16 +278,23 @@ export default {
     if (debug) {
       const ageLog = Number.isFinite(ageLimit) ? ageLimit : "";
       console.log(
-        `[mediaCheck] api blocked=${apiResult.blocked} ageRestricted=${apiResult.ageRestricted} ageLimit=${ageLog} availability=${availability}`,
+        t("events.mediaCheck.log.apiResult", {
+          blocked: apiResult.blocked,
+          ageRestricted: apiResult.ageRestricted,
+          ageLimit: ageLog,
+          availability,
+        }),
       );
     }
 
     if (!shouldSkip) {
-      if (debug) console.log("[mediaCheck] allowed by api");
+      if (debug) console.log(t("events.mediaCheck.log.apiAllowed"));
       return;
     }
 
-    const reasonText = restricted ? "restricao de idade" : "indisponivel";
+    const reasonText = restricted
+      ? t("events.mediaCheck.reason.age")
+      : t("events.mediaCheck.reason.unavailable");
     const detail =
       blockedByAvailability && availability ? ` (${availability})` : "";
     await skipTrack(reasonText, detail);

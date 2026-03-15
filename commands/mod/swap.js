@@ -7,26 +7,30 @@ import { getWaitlist } from "../../helpers/waitlist.js";
 export default {
   name: "swap",
   aliases: ["trocar"],
-  description:
-    "Troca a posicao de dois usuarios na fila. Requer cargo bouncer ou superior.",
-  usage: "!swap <usuario1> <usuario2>",
+  descriptionKey: "commands.swap.description",
+  usageKey: "commands.swap.usage",
   cooldown: 5_000,
   minRole: "bouncer",
 
   async execute(ctx) {
-    const { api, bot, args, reply } = ctx;
+    const { api, bot, args, reply, t } = ctx;
     const targetA = (args[0] ?? "").replace(/^@/, "").trim();
     const targetB = (args[1] ?? "").replace(/^@/, "").trim();
 
     if (!targetA || !targetB) {
-      await reply("Uso: !swap <usuario1> <usuario2>");
+      await reply(t("commands.swap.usageMessage"));
       return;
     }
 
     const userA = bot.findRoomUser(targetA);
     const userB = bot.findRoomUser(targetB);
     if (!userA || !userB) {
-      await reply("Usuario nao encontrado na sala.");
+      await reply(t("commands.swap.userNotFound"));
+      return;
+    }
+
+    if (bot.isBotUser(userA.userId) || bot.isBotUser(userB.userId)) {
+      await reply(t("commands.mod.cannotTargetBot"));
       return;
     }
 
@@ -40,12 +44,12 @@ export default {
       );
 
       if (idxA < 0 || idxB < 0) {
-        await reply("Ambos os usuarios precisam estar na fila.");
+        await reply(t("commands.swap.notInQueue"));
         return;
       }
 
       if (idxA === idxB) {
-        await reply("Os usuarios ja estao na mesma posicao.");
+        await reply(t("commands.swap.samePosition"));
         return;
       }
 
@@ -58,10 +62,13 @@ export default {
       }
 
       await reply(
-        `Swap realizado: ${userA.displayName ?? userA.username} <-> ${userB.displayName ?? userB.username}.`,
+        t("commands.swap.success", {
+          userA: userA.displayName ?? userA.username,
+          userB: userB.displayName ?? userB.username,
+        }),
       );
     } catch (err) {
-      await reply(`Erro ao trocar posicoes: ${err.message}`);
+      await reply(t("commands.swap.error", { error: err.message }));
     }
   },
 };

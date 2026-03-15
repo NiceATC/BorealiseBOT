@@ -5,18 +5,18 @@
 export default {
   name: "reload",
   aliases: ["reconnect", "restart"],
-  description: "Reconecta o bot sem reiniciar o processo.",
-  usage: "!reload",
+  descriptionKey: "commands.reload.description",
+  usageKey: "commands.reload.usage",
   cooldown: 10_000,
   minRole: "manager",
 
   async execute(ctx) {
-    const { bot, reply } = ctx;
-    await reply("Recarregando conexao do bot...");
+    const { bot, reply, t } = ctx;
+    await reply(t("commands.reload.reply.loading"));
     try {
       await bot.reload();
     } catch (err) {
-      await reply(`Erro ao recarregar: ${err.message}`);
+      await reply(t("commands.reload.reply.error", { error: err.message }));
     }
   },
 };

@@ -7,15 +7,15 @@ import { getWaitlist } from "../../helpers/waitlist.js";
 
 const roulette = {
   name: "roulette",
-  description: "Abre uma roleta russa na fila.",
-  usage: "!roulette",
+  descriptionKey: "commands.roulette.description",
+  usageKey: "commands.roulette.usage",
   cooldown: 5000,
   minRole: "bouncer",
 
   async execute(ctx) {
-    const { bot, api, reply } = ctx;
+    const { bot, api, reply, t } = ctx;
     if (rouletteState.open) {
-      await reply("Roleta russa ja esta aberta. Use !join para entrar.");
+      await reply(t("commands.roulette.alreadyOpen"));
       return;
     }
 
@@ -25,27 +25,31 @@ const roulette = {
       closeRoulette(bot, api).catch(() => {});
     }, ROULETTE_DURATION_MS);
 
-    await reply("Roleta russa aberta! Use !join para arriscar (60s).");
+    await reply(
+      t("commands.roulette.opened", {
+        seconds: Math.round(ROULETTE_DURATION_MS / 1000),
+      }),
+    );
   },
 };
 
 const join = {
   name: "join",
-  description: "Entra na roleta russa aberta.",
-  usage: "!join",
+  descriptionKey: "commands.join.description",
+  usageKey: "commands.join.usage",
   cooldown: 3000,
 
   async execute(ctx) {
-    const { sender, reply, api, bot } = ctx;
+    const { sender, reply, api, bot, t } = ctx;
     if (!rouletteState.open) {
-      await reply("Roleta russa fechada.");
+      await reply(t("commands.join.closed"));
       return;
     }
 
     const key = sender.userId != null ? String(sender.userId) : "";
-    const name = sender.displayName ?? sender.username ?? "alguem";
+    const name = sender.displayName ?? sender.username ?? t("common.someone");
     if (!key) {
-      await reply("Nao foi possivel identificar o usuario.");
+      await reply(t("commands.join.noUser"));
       return;
     }
 
@@ -55,50 +59,50 @@ const join = {
         (u) => String(u.id ?? u.userId ?? u.user_id ?? "") === key,
       );
       if (!inList) {
-        await reply("Voce precisa estar na fila para participar.");
+        await reply(t("commands.join.mustBeInQueue"));
         return;
       }
     } catch (err) {
-      await reply(`Nao consegui ler a fila: ${err.message}`);
+      await reply(t("commands.join.waitlistError", { error: err.message }));
       return;
     }
 
     if (rouletteState.participants.has(key)) {
-      await reply("Voce ja esta na roleta russa.");
+      await reply(t("commands.join.alreadyIn"));
       return;
     }
 
     rouletteState.participants.set(key, name);
-    await reply(`${name} entrou na roleta russa.`);
+    await reply(t("commands.join.joined", { name }));
   },
 };
 
 const leave = {
   name: "leave",
-  description: "Sai da roleta russa aberta.",
-  usage: "!leave",
+  descriptionKey: "commands.leave.description",
+  usageKey: "commands.leave.usage",
   cooldown: 3000,
 
   async execute(ctx) {
-    const { sender, reply } = ctx;
+    const { sender, reply, t } = ctx;
     if (!rouletteState.open) {
-      await reply("Roleta russa fechada.");
+      await reply(t("commands.leave.closed"));
       return;
     }
 
     const key = sender.userId != null ? String(sender.userId) : "";
-    const name = sender.displayName ?? sender.username ?? "alguem";
+    const name = sender.displayName ?? sender.username ?? t("common.someone");
     if (!key) {
-      await reply("Nao foi possivel identificar o usuario.");
+      await reply(t("commands.leave.noUser"));
       return;
     }
     if (!rouletteState.participants.has(key)) {
-      await reply("Voce nao esta na roleta russa.");
+      await reply(t("commands.leave.notIn"));
       return;
     }
 
     rouletteState.participants.delete(key);
-    await reply(`${name} saiu da roleta russa.`);
+    await reply(t("commands.leave.left", { name }));
   },
 };
 

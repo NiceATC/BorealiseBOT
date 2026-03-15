@@ -1,0 +1,515 @@
+{
+    "common": {
+        "you": "you",
+        "someone": "someone",
+        "song": "song",
+        "network": "network",
+        "unknownError": "unknown error",
+        "requestFailed": "request failed"
+    },
+    "banner": {
+        "title": "{name} v{version}"
+    },
+    "index": {
+        "shutdown": "\n[index] {signal} received - shutting down...",
+        "shutdownTimeout": "[index] Shutdown exceeded {seconds}s; forcing exit.",
+        "shutdownError": "[index] Error during shutdown: {error}",
+        "serverUnavailable": "[index] Server unavailable. Retrying in {seconds}s...",
+        "fatalStartup": "[index] Fatal startup error: {error}",
+        "uncaughtException": "[index] Uncaught exception: {error}",
+        "unhandledRejection": "[index] Unhandled rejection: {error}",
+        "initFailed": "[index] Bot initialization failed: {error}",
+        "mainFailed": "[index] Unexpected failure: {error}"
+    },
+    "config": {
+        "envMissing": "[config] .env not found at {path}\n         Copy .env.example to .env and fill in your credentials.",
+        "configCopied": "[config] config.json not found - copied from config.example.json.\n         Edit config.json (especially 'room') before running.",
+        "configMissing": "[config] config.json not found at {path}\n         Copy config.example.json to config.json and edit it.",
+        "parseFailed": "[config] Failed to parse config.json: {error}",
+        "missingEnvVar": "[config] Missing required env var: {key}",
+        "invalidRoom": "[config] config.json: 'room' must be set to a valid room slug."
+    },
+    "commands": {
+        "mod": {
+            "cannotTargetBot": "I can't use this command on the bot."
+        },
+        "registry": {
+            "invalidCommand": "Invalid command: must have \"name\" and \"execute\".",
+            "overwrite": "[CommandRegistry] Overwriting existing command: {command}",
+            "botRoleMissingLog": "Bot role too low for {command} (needs {role}, current level {level}).",
+            "botRoleMissingReply": "I need the {role} role to run {command}.",
+            "userMissingRoleReply": "{user}, you need the {role} role to use {command}.",
+            "cooldownReply": "{user}, wait {seconds}s before using {command} again."
+        },
+        "help": {
+            "description": "List commands or show help for a command.",
+            "usage": "!help [command]",
+            "notFound": "Command not found: {name}",
+            "usageLine": "Usage: {usage}",
+            "aliasesLine": "Aliases: {aliases}",
+            "requirementLine": "Required role: {role}",
+            "list": "Commands: {list}"
+        },
+        "ping": {
+            "description": "Check if the bot is alive.",
+            "usage": "!ping",
+            "reply": "Pong, {user}! {ms}ms"
+        },
+        "start": {
+            "description": "Resume the bot.",
+            "usage": "!start",
+            "reply": {
+                "resumed": "Bot resumed.",
+                "alreadyActive": "Bot is already running."
+            }
+        },
+        "stop": {
+            "description": "Pause the bot.",
+            "usage": "!stop",
+            "reply": {
+                "paused": "Bot paused.",
+                "alreadyPaused": "Bot is already paused."
+            }
+        },
+        "reload": {
+            "description": "Reconnect the bot.",
+            "usage": "!reload",
+            "reply": {
+                "loading": "Reloading...",
+                "error": "Reload failed: {error}"
+            }
+        },
+        "reloadcmd": {
+            "description": "Reload commands.",
+            "usage": "!reloadcmd",
+            "reply": {
+                "successWithFailures": "Reloaded {loaded} commands ({failed} failed).",
+                "success": "Reloaded {loaded} commands.",
+                "error": "Failed to reload commands: {error}"
+            }
+        },
+        "nowplaying": {
+            "description": "Show the current track and reactions.",
+            "usage": "!np",
+            "none": "Nothing playing right now.",
+            "trackLine": "Now playing: {title}{artist}",
+            "djLine": "DJ: {dj}",
+            "reactions": "Reactions: 👍 {woots} / 👎 {mehs} / 🔁 {grabs}"
+        },
+        "stats": {
+            "description": "Show bot session stats.",
+            "usage": "!stats",
+            "notReady": "Stats are not ready yet.",
+            "uptime": "Uptime: {uptime}",
+            "woots": "Woots: {count}",
+            "queue": "Queue: {position}/{total}"
+        },
+        "queue": {
+            "description": "Show the bot's waitlist position.",
+            "usage": "!queue",
+            "notInQueue": "I'm not in the queue.",
+            "next": " — Next: {next}",
+            "status": "Position: {position}/{total}{next}"
+        },
+        "woot": {
+            "description": "Cast a woot for the current track.",
+            "usage": "!woot",
+            "noTrack": "No track playing.",
+            "voted": "Wooted {title} for {user}.",
+            "error": "Woot failed: {error}"
+        },
+        "blacklist": {
+            "description": "Manage the track blacklist.",
+            "usage": "!blacklist <add|remove|list|info> ...",
+            "usageMessage": "Usage: !blacklist <add|remove|list|info> ...",
+            "noTrackInfo": "No current track to show.",
+            "currentInfo": "Current: {label} ({id})",
+            "noTrackAdd": "No track to add.",
+            "already": "That track is already blacklisted.",
+            "addedSkip": "Added to blacklist; skipping...",
+            "addedSkipError": "Added to blacklist, but failed to skip: {error}",
+            "added": "Added to blacklist.",
+            "removeUsage": "Usage: !blacklist remove <current|source:id>",
+            "removed": "Removed from blacklist.",
+            "empty": "Blacklist is empty.",
+            "list": "Blacklist ({limit}): {items}",
+            "invalidAction": "Invalid action. Use add/remove/list/info."
+        },
+        "togglebl": {
+            "description": "Enable/disable the blacklist.",
+            "usage": "!togglebl",
+            "enabled": "Blacklist enabled.",
+            "disabled": "Blacklist disabled."
+        },
+        "motd": {
+            "description": "Manage the MOTD.",
+            "usage": "!motd [message|on|off|interval <n>]",
+            "stateOn": "on",
+            "stateOff": "off",
+            "status": "MOTD {state} | interval {interval} | message: {message}",
+            "intervalUsage": "Usage: !motd interval <n>",
+            "intervalUpdated": "MOTD interval set to {interval}.",
+            "messageUsage": "Usage: !motd <message>",
+            "updated": "MOTD updated.",
+            "enabled": "MOTD enabled.",
+            "disabled": "MOTD disabled."
+        },
+        "togglemotd": {
+            "description": "Toggle the MOTD.",
+            "usage": "!togglemotd",
+            "enabled": "MOTD enabled.",
+            "disabled": "MOTD disabled."
+        },
+        "skip": {
+            "description": "Skip the current track.",
+            "usage": "!skip [reason]",
+            "successWithReason": "Track skipped. Reason: {reason}",
+            "success": "Track skipped.",
+            "error": "Failed to skip: {error}"
+        },
+        "lock": {
+            "description": "Lock the waitlist.",
+            "usage": "!lock",
+            "success": "Waitlist locked.",
+            "error": "Failed to lock waitlist: {error}"
+        },
+        "unlock": {
+            "description": "Unlock the waitlist.",
+            "usage": "!unlock",
+            "success": "Waitlist unlocked.",
+            "error": "Failed to unlock waitlist: {error}"
+        },
+        "remove": {
+            "description": "Remove a user from the waitlist.",
+            "usage": "!remove <user>",
+            "usageMessage": "Usage: !remove <user>",
+            "userNotFound": "User not found: {user}",
+            "notInQueue": "{user} is not in the queue.",
+            "removed": "Removed {user} from the queue.",
+            "error": "Failed to remove: {error}"
+        },
+        "move": {
+            "description": "Move a user in the waitlist.",
+            "usage": "!move <user> <position>",
+            "usageMessage": "Usage: !move <user> <position>",
+            "userNotFound": "User not found: {user}",
+            "moved": "Moved {user} to position {position}.",
+            "error": "Failed to move: {error}"
+        },
+        "swap": {
+            "description": "Swap two users in the waitlist.",
+            "usage": "!swap <userA> <userB>",
+            "usageMessage": "Usage: !swap <userA> <userB>",
+            "userNotFound": "User(s) not found.",
+            "notInQueue": "Both users must be in the queue.",
+            "samePosition": "Users are already in the same position.",
+            "success": "Swapped {userA} and {userB}.",
+            "error": "Failed to swap: {error}"
+        },
+        "timeguard": {
+            "description": "Toggle time guard.",
+            "usage": "!timeguard",
+            "enabled": "Time guard enabled.",
+            "disabled": "Time guard disabled."
+        },
+        "maxlength": {
+            "description": "Set the max song length.",
+            "usage": "!maxlength <minutes>",
+            "usageMessage": "Usage: !maxlength <minutes>",
+            "updated": "Max song length set to {minutes} min."
+        },
+        "kick": {
+            "description": "Kick a user from the room.",
+            "usage": "!kick <user>",
+            "usageMessage": "Usage: !kick <user>",
+            "userNotFound": "User not found: {user}",
+            "roleTooHigh": "I can't kick {user}; their role is too high.",
+            "removed": "Kicked {user}.",
+            "error": "Failed to kick: {error}"
+        },
+        "mute": {
+            "description": "Mute a user.",
+            "usage": "!mute <user> [duration] [reason]",
+            "usageMessage": "Usage: !mute <user> [duration] [reason]",
+            "userNotFound": "User not found: {user}",
+            "roleTooHigh": "I can't mute {user}; their role is too high.",
+            "muted": "Muted {user}",
+            "duration": "for {duration}",
+            "reason": "reason: {reason}",
+            "error": "Failed to mute: {error}"
+        },
+        "unmute": {
+            "description": "Unmute a user.",
+            "usage": "!unmute <user>",
+            "usageMessage": "Usage: !unmute <user>",
+            "userNotFound": "User not found: {user}",
+            "unmuted": "Unmuted {user}",
+            "error": "Failed to unmute: {error}"
+        },
+        "ban": {
+            "description": "Ban a user.",
+            "usage": "!ban <user> [duration] [reason]",
+            "usageMessage": "Usage: !ban <user> [duration] [reason]",
+            "userNotFound": "User not found: {user}",
+            "roleTooHigh": "I can't ban {user}; their role is too high.",
+            "banned": "Banned {user}",
+            "duration": "for {duration}",
+            "reason": "reason: {reason}",
+            "error": "Failed to ban: {error}"
+        },
+        "unban": {
+            "description": "Unban a user.",
+            "usage": "!unban <user>",
+            "usageMessage": "Usage: !unban <user>",
+            "notFound": "Ban not found for {user}.",
+            "removed": "Unbanned {user}.",
+            "error": "Failed to unban: {error}"
+        },
+        "dc": {
+            "description": "Restore a user's waitlist position after a DC.",
+            "usage": "!dc [user]",
+            "usageMessage": "Usage: !dc [user]",
+            "userNotFound": "User not found: {user}",
+            "noPermission": "You don't have permission to move another user.",
+            "noSnapshot": "No recent snapshot for that user.",
+            "expired": "Snapshot expired.",
+            "invalidPosition": "Invalid saved position.",
+            "mustJoin": "User must be in the waitlist.",
+            "moved": "Moved {user} back to position {position}.",
+            "error": "Failed to restore position: {error}"
+        },
+        "savequeue": {
+            "description": "Save the current waitlist snapshot.",
+            "usage": "!savequeue",
+            "empty": "Waitlist is empty.",
+            "saved": "Saved {count} entries.",
+            "error": "Failed to save queue: {error}"
+        },
+        "autowoot": {
+            "description": "Toggle auto-woot.",
+            "usage": "!autowoot",
+            "enabled": "Auto-woot enabled.",
+            "disabled": "Auto-woot disabled."
+        },
+        "settings": {
+            "description": "Get or set persistent settings.",
+            "usage": "!settings <key> [value]",
+            "usageMessage": "Usage: !settings <key> [value]",
+            "list": "Available keys: {keys}",
+            "invalidKey": "Invalid key.",
+            "value": "{key} = {value}",
+            "notFound": "No value for {key}.",
+            "updated": "Updated {key} to {value}."
+        },
+        "welcome": {
+            "description": "Toggle join welcome messages.",
+            "usage": "!welcome",
+            "enabled": "Welcome messages enabled.",
+            "disabled": "Welcome messages disabled."
+        },
+        "ba": {
+            "description": "Responds with BA.",
+            "usage": "!ba",
+            "reply": "BA!"
+        },
+        "eightball": {
+            "description": "Magic 8-ball.",
+            "usage": "!8ball <question>",
+            "usageMessage": "Ask a question.",
+            "reply": "{question} — {answer}",
+            "responses": [
+                "Yes.",
+                "No.",
+                "Maybe.",
+                "Ask again later.",
+                "Definitely.",
+                "Absolutely not.",
+                "Very likely.",
+                "Unlikely.",
+                "Without a doubt.",
+                "I wouldn't count on it.",
+                "Signs point to yes.",
+                "Cannot predict now."
+            ]
+        },
+        "cookie": {
+            "description": "Give someone a cookie.",
+            "usage": "!cookie [user]",
+            "userNotFound": "User not found: {user}",
+            "selfLines": [
+                "{sender} grabs a cookie for themselves 🍪",
+                "{sender}, here is your cookie 🍪",
+                "{sender} treats themselves to a cookie 🍪"
+            ],
+            "giftLines": [
+                "{sender} gives {target} a cookie 🍪",
+                "{sender} hands {target} a cookie 🍪",
+                "{sender} shares a cookie with {target} 🍪"
+            ]
+        },
+        "ghostbuster": {
+            "description": "Check if a user is in the room.",
+            "usage": "!ghostbuster <user>",
+            "present": "{name} is in the room.",
+            "absent": "{name} is not in the room."
+        },
+        "gif": {
+            "description": "Fetch a GIF.",
+            "usage": "!gif <query>",
+            "notFound": "No GIF found.",
+            "result": "Here you go: {url}",
+            "error": "GIF error: {error}"
+        },
+        "roulette": {
+            "description": "Open the roulette.",
+            "usage": "!roulette",
+            "alreadyOpen": "Roulette is already open.",
+            "opened": "Roulette open for {seconds}s. Use !join."
+        },
+        "join": {
+            "description": "Join the roulette.",
+            "usage": "!join",
+            "closed": "Roulette is closed.",
+            "noUser": "Could not identify you.",
+            "mustBeInQueue": "You must be in the waitlist to join.",
+            "waitlistError": "Failed to check waitlist: {error}",
+            "alreadyIn": "You're already in.",
+            "joined": "{name} joined the roulette."
+        },
+        "leave": {
+            "description": "Leave the roulette.",
+            "usage": "!leave",
+            "closed": "Roulette is closed.",
+            "noUser": "Could not identify you.",
+            "notIn": "You're not in the roulette.",
+            "left": "{name} left the roulette."
+        },
+        "thor": {
+            "description": "Spin Thor's hammer on the waitlist.",
+            "usage": "!thor",
+            "noUser": "Could not identify you.",
+            "apiUnavailable": "Waitlist API unavailable.",
+            "noPermission": "I need the bouncer role for that.",
+            "waitlistError": "Failed to fetch waitlist: {error}",
+            "mustBeInQueue": "You must be in the waitlist.",
+            "moveError": "Failed to move {user}: {error}",
+            "removeError": "Failed to remove {user}: {error}",
+            "goodLines": [
+                "{name} is blessed and goes to the top! ⚡",
+                "{name} rises to the top of the queue!",
+                "{name} gets the top spot!"
+            ],
+            "neutralLines": [
+                "{name} survives this round.",
+                "{name} stays where they are.",
+                "{name} is spared."
+            ],
+            "badLines": [
+                "{name} gets zapped and leaves the queue! ⚡",
+                "{name} is removed from the queue!",
+                "{name} loses the spot and leaves!"
+            ]
+        }
+    },
+    "events": {
+        "registry": {
+            "invalidHandler": "Invalid handler: must have \"name\" and \"handle\".",
+            "missingEvent": "Handler \"{name}\" must specify \"event\" or \"events\".",
+            "overwrite": "[EventRegistry] Overwriting existing handler: {name}",
+            "handlerError": "[EventRegistry] Error in \"{name}\" handler: {error}"
+        },
+        "greet": {
+            "description": "Sends a welcome message when a user joins."
+        },
+        "timeGuard": {
+            "description": "Skips tracks longer than the configured limit.",
+            "skip": "Track too long ({minutes} min): {label}. Skipping..."
+        },
+        "mediaCheck": {
+            "description": "Checks YouTube availability/age restriction and skips if needed.",
+            "skip": "Skipping {label}: {reason}{detail}.",
+            "reason": {
+                "age": "age restricted",
+                "unavailable": "unavailable"
+            },
+            "log": {
+                "apiHttp": "[mediaCheck] API returned HTTP {status}",
+                "apiInvalid": "[mediaCheck] Invalid API response",
+                "apiError": "[mediaCheck] API error: {error}",
+                "noId": "[mediaCheck] Unable to extract video ID. Keys: {keys}",
+                "checking": "[mediaCheck] Checking source={source} id={id} title={title}",
+                "ytdlError": "[mediaCheck] ytdl error: {error}",
+                "ytdlStatus": "[mediaCheck] ytdl status={status} ageRestricted={ageRestricted} embeddable={embeddable} reason={reason}",
+                "ytdlLoginRequired": "[mediaCheck] ytdl LOGIN_REQUIRED; allowing.",
+                "ytdlAllowed": "[mediaCheck] ytdl allowed playback.",
+                "ytdlInconclusive": "[mediaCheck] ytdl inconclusive; using API.",
+                "apiUnavailable": "[mediaCheck] API unavailable.",
+                "apiResult": "[mediaCheck] API result blocked={blocked} ageRestricted={ageRestricted} ageLimit={ageLimit} availability={availability}",
+                "apiAllowed": "[mediaCheck] API allowed playback."
+            }
+        },
+        "waitlistSnapshot": {
+            "description": "Saves waitlist snapshots for !dc."
+        }
+    },
+    "helpers": {
+        "roulette": {
+            "closed": {
+                "noParticipants": "Roulette closed: no participants.",
+                "apiUnavailable": "Roulette closed: API unavailable.",
+                "waitlistError": "Roulette closed: failed to fetch waitlist: {error}",
+                "emptyQueue": "Roulette closed: waitlist is empty.",
+                "noEligible": "Roulette closed: no eligible participants.",
+                "noTarget": "Roulette closed: no target found.",
+                "noPermission": "I don't have permission to move/remove {user}."
+            },
+            "moveError": "Failed to move {user}: {error}",
+            "removeError": "Failed to remove {user}: {error}",
+            "moveLines": [
+                "{name} spins and lands on position {pos}!",
+                "{name} is moved to position {pos}.",
+                "{name} gets moved to spot {pos}."
+            ],
+            "shotLines": [
+                "{name} got blasted and left the queue!",
+                "{name} is out of the queue!",
+                "{name} was removed from the queue!"
+            ]
+        }
+    },
+    "logs": {
+        "modules": {
+            "commandsLoaded": "Commands loaded: {loaded} (failed: {failed}).",
+            "commandFailures": "Command load failures: {files}",
+            "eventsLoaded": "Events loaded: {loaded} (failed: {failed}).",
+            "eventFailures": "Event load failures: {files}"
+        },
+        "bot": {
+            "paused": "Bot paused.",
+            "resumed": "Bot resumed.",
+            "stopped": "Bot stopped.",
+            "loggingIn": "Logging in as {email}...",
+            "loginFailed": "Login failed (status: {status}): {error}",
+            "missingAccessToken": "Login response missing access token.",
+            "loggedIn": "Logged in as {username} (id: {userId}).",
+            "identityFallback": "Fetched identity via auth.me: {username}",
+            "authMeFailed": "auth.me failed: {error}",
+            "pipelineReady": "Pipeline ready (session: {session}) for room {room}.",
+            "joinFailed": "Failed to join room: {error}",
+            "disconnected": "Disconnected (code {code}{reason}).",
+            "reconnected": "Reconnected.",
+            "pipelineError": "Pipeline error: {error}",
+            "roomRole": "Bot room role: {role}",
+            "joinedRoom": "Joined room: {room}",
+            "onlineAnnouncement": "✅ {name} online (v{version})",
+            "onlineAnnounceFailed": "Failed to announce online: {error}",
+            "roleUpdated": "Bot role updated: {role}",
+            "commandError": "Command error in {command}: {error}",
+            "voteFailed": "Vote failed: {error}",
+            "mentionFailed": "Failed to send mention reply: {error}",
+            "blacklistNoPermission": "Blacklist skip blocked: missing permission.",
+            "blacklistSkipMessage": "Blacklisted track: {label}. Skipping...",
+            "blacklistSkipFailed": "Failed to skip blacklisted track: {error}"
+        }
+    }
+}

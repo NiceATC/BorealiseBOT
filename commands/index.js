@@ -9,8 +9,10 @@
  *   {
  *     name:        string          — primary trigger (without prefix)
  *     aliases?:    string[]        — alternative triggers
- *     description: string          — shown in !help
- *     usage?:      string          — shown in !help <command>
+ *     descriptionKey?: string      — i18n key shown in !help
+ *     description?:   string       — fallback if no key is provided
+ *     usageKey?:      string       — i18n key shown in !help <command>
+ *     usage?:         string       — fallback if no key is provided
  *     cooldown?:   number          — per-user cooldown in ms (default: 3 000)
  *     minRole?:    string          — minimum room role required (e.g. "bouncer", "manager")
  *     execute(ctx): Promise<void>  — command handler
@@ -39,6 +41,7 @@ import { fileURLToPath, pathToFileURL } from "url";
 import path from "path";
 import { ROLE_LEVELS } from "../lib/permissions.js";
 import { listJsFilesRecursive } from "../helpers/fs.js";
+import { t as translate } from "../lib/i18n.js";
 
 export class CommandRegistry {
   constructor() {
@@ -64,15 +67,17 @@ export class CommandRegistry {
    */
   register(cmd) {
     if (!cmd?.name || typeof cmd.execute !== "function") {
-      throw new Error(
-        `[CommandRegistry] Invalid command: must have "name" and "execute".`,
-      );
+      throw new Error(translate("commands.registry.invalidCommand"));
     }
 
     const key = cmd.name.toLowerCase();
 
     if (this._commands.has(key)) {
-      console.warn(`[CommandRegistry] Overwriting existing command: ${key}`);
+      console.warn(
+        translate("commands.registry.overwrite", {
+          command: key,
+        }),
+      );
     }
 
     this._commands.set(key, cmd);
@@ -169,12 +174,20 @@ export class CommandRegistry {
 
       // Check if the bot itself has the required role in the room.
       if ((ctx.botRoleLevel ?? 0) < required) {
-        console.log(
-          `[CommandRegistry] Bot lacks role "${cmd.minRole}" (level ${ctx.botRoleLevel}) for !${cmd.name} — skipping`,
+        ctx.bot._log(
+          "warn",
+          ctx.t("commands.registry.botRoleMissingLog", {
+            role: cmd.minRole,
+            level: ctx.botRoleLevel,
+            command: cmd.name,
+          }),
         );
         await ctx
           .reply(
-            `Não tenho permissão para executar !${cmd.name} — preciso ser ${cmd.minRole} ou superior.`,
+            ctx.t("commands.registry.botRoleMissingReply", {
+              command: cmd.name,
+              role: cmd.minRole,
+            }),
           )
           .catch(() => {});
         return;
@@ -184,7 +197,11 @@ export class CommandRegistry {
       if ((ctx.senderRoleLevel ?? 0) < required) {
         await ctx
           .reply(
-            `@${ctx.sender.username ?? ctx.sender.userId} Você precisa ser ${cmd.minRole} ou superior para usar !${cmd.name}.`,
+            ctx.t("commands.registry.userMissingRoleReply", {
+              user: ctx.sender.username ?? ctx.sender.userId,
+              role: cmd.minRole,
+              command: cmd.name,
+            }),
           )
           .catch(() => {});
         return;
@@ -201,7 +218,11 @@ export class CommandRegistry {
         const secs = Math.ceil(remaining / 1000);
         await ctx
           .reply(
-            `@${ctx.sender.username ?? ctx.sender.userId} aguarda ${secs}s para usar !${cmd.name} novamente.`,
+            ctx.t("commands.registry.cooldownReply", {
+              user: ctx.sender.username ?? ctx.sender.userId,
+              seconds: secs,
+              command: cmd.name,
+            }),
           )
           .catch(() => {});
         return;

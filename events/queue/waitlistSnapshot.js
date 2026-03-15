@@ -9,7 +9,7 @@ import { upsertWaitlistSnapshot } from "../../lib/storage.js";
 
 export default {
   name: "waitlistSnapshot",
-  description: "Salva a fila atual para o comando !dc.",
+  descriptionKey: "events.waitlistSnapshot.description",
   events: [
     Events.ROOM_WAITLIST_UPDATE,
     Events.ROOM_WAITLIST_JOIN,
