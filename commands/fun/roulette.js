@@ -7,7 +7,7 @@ import { getWaitlist } from "../../helpers/waitlist.js";
 
 const roulette = {
   name: "roulette",
-  description: "Abre uma roulette simples no chat.",
+  description: "Abre uma roleta russa na fila.",
   usage: "!roulette",
   cooldown: 5000,
   minRole: "bouncer",
@@ -15,7 +15,7 @@ const roulette = {
   async execute(ctx) {
     const { bot, api, reply } = ctx;
     if (rouletteState.open) {
-      await reply("Roulette ja esta aberta. Use !join para entrar.");
+      await reply("Roleta russa ja esta aberta. Use !join para entrar.");
       return;
     }
 
@@ -25,20 +25,20 @@ const roulette = {
       closeRoulette(bot, api).catch(() => {});
     }, ROULETTE_DURATION_MS);
 
-    await reply("Roulette aberta! Use !join para participar (60s).");
+    await reply("Roleta russa aberta! Use !join para arriscar (60s).");
   },
 };
 
 const join = {
   name: "join",
-  description: "Entra na roulette aberta.",
+  description: "Entra na roleta russa aberta.",
   usage: "!join",
   cooldown: 3000,
 
   async execute(ctx) {
     const { sender, reply, api, bot } = ctx;
     if (!rouletteState.open) {
-      await reply("Roulette fechada.");
+      await reply("Roleta russa fechada.");
       return;
     }
 
@@ -64,25 +64,25 @@ const join = {
     }
 
     if (rouletteState.participants.has(key)) {
-      await reply("Voce ja esta na roulette.");
+      await reply("Voce ja esta na roleta russa.");
       return;
     }
 
     rouletteState.participants.set(key, name);
-    await reply(`${name} entrou na roulette.`);
+    await reply(`${name} entrou na roleta russa.`);
   },
 };
 
 const leave = {
   name: "leave",
-  description: "Sai da roulette aberta.",
+  description: "Sai da roleta russa aberta.",
   usage: "!leave",
   cooldown: 3000,
 
   async execute(ctx) {
     const { sender, reply } = ctx;
     if (!rouletteState.open) {
-      await reply("Roulette fechada.");
+      await reply("Roleta russa fechada.");
       return;
     }
 
@@ -93,12 +93,12 @@ const leave = {
       return;
     }
     if (!rouletteState.participants.has(key)) {
-      await reply("Voce nao esta na roulette.");
+      await reply("Voce nao esta na roleta russa.");
       return;
     }
 
     rouletteState.participants.delete(key);
-    await reply(`${name} saiu da roulette.`);
+    await reply(`${name} saiu da roleta russa.`);
   },
 };
 
