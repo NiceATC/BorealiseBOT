@@ -5,7 +5,7 @@
  * If blocked, skips the track and notifies the chat.
  */
 
-import { Events } from "@borealise/pipeline";
+import { Events } from "@borealise/shared";
 import ytdl from "@distube/ytdl-core";
 import { getRoleLevel } from "../../lib/permissions.js";
 import dns from "dns";

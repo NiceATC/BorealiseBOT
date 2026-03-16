@@ -4,7 +4,7 @@
  * Skips tracks longer than maxSongLengthMin when enabled.
  */
 
-import { Events } from "@borealise/pipeline";
+import { Events } from "@borealise/shared";
 import { getRoleLevel } from "../../lib/permissions.js";
 
 export default {

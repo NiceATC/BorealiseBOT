@@ -17,7 +17,7 @@
  * again until the cooldown expires.
  */
 
-import { Events } from "@borealise/pipeline";
+import { Events } from "@borealise/shared";
 import { getGreetState, upsertGreetState } from "../../lib/storage.js";
 
 export default {

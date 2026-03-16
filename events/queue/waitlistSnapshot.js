@@ -4,7 +4,7 @@
  * Saves the current waitlist snapshot for DC restore.
  */
 
-import { Events } from "@borealise/pipeline";
+import { Events } from "@borealise/shared";
 import { upsertWaitlistSnapshot } from "../../lib/storage.js";
 
 export default {

@@ -55,6 +55,12 @@
             "usage": "!ping",
             "reply": "Pong, {user}! {ms}ms"
         },
+        "cmddelete": {
+            "description": "Ativa ou desativa a limpeza de comandos.",
+            "usage": "!cmddelete [on|off]",
+            "enabled": "Limpeza de comandos ativada.",
+            "disabled": "Limpeza de comandos desativada."
+        },
         "start": {
             "description": "Retoma o bot.",
             "usage": "!start",

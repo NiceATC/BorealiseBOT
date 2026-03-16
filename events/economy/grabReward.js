@@ -1,4 +1,4 @@
-import { Events } from "@borealise/pipeline";
+import { Events } from "@borealise/shared";
 
 function getUserId(data) {
   const user = data?.user ?? data?.grabber ?? data?.sender ?? null;

@@ -1,4 +1,4 @@
-import { Events } from "@borealise/pipeline";
+import { Events } from "@borealise/shared";
 
 function getVoteValue(data) {
   const vote = data?.vote ?? data?.direction ?? data?.value ?? data?.type;

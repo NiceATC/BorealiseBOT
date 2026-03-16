@@ -9,8 +9,9 @@
         "dev": "node --watch index.js"
     },
     "dependencies": {
-        "@borealise/api": "^2.0.0-alpha.2",
-        "@borealise/pipeline": "^1.0.0-alpha.1",
+        "@borealise/api": "^2.0.0-alpha.15",
+        "@borealise/pipeline": "^1.0.0-alpha.2",
+        "@borealise/shared": "^1.0.2",
         "@napi-rs/canvas": "^0.1.60",
         "@distube/ytdl-core": "^4.16.12",
         "axios": "^1.13.6",

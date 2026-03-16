@@ -10,6 +10,7 @@ export default {
   descriptionKey: "commands.ping.description",
   usageKey: "commands.ping.usage",
   cooldown: 5_000,
+  deleteOn: 5000,
 
   async execute(ctx) {
     const start = Date.now();

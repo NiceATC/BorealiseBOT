@@ -4,7 +4,7 @@
  * Removes AFK users from the waitlist when enabled.
  */
 
-import { Events } from "@borealise/pipeline";
+import { Events } from "@borealise/shared";
 import { getRoleLevel } from "../../lib/permissions.js";
 import { formatDuration } from "../../helpers/time.js";
 

@@ -1,4 +1,4 @@
-import { Events } from "@borealise/pipeline";
+import { Events } from "@borealise/shared";
 
 function getDj(data) {
   return data?.dj ?? data?.currentDj ?? data?.current_dj ?? null;

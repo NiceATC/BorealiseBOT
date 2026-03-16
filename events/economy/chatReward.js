@@ -1,4 +1,4 @@
-import { Events } from "@borealise/pipeline";
+import { Events } from "@borealise/shared";
 
 export default {
   name: "economyChatReward",

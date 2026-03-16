@@ -14,6 +14,7 @@
  *     usageKey?:      string       — i18n key shown in !help <command>
  *     usage?:         string       — fallback if no key is provided
  *     cooldown?:   number          — per-user cooldown in ms (default: 3 000)
+ *     deleteOn?:   number          — delete the bot reply after N ms (optional)
  *     minRole?:    string          — minimum room role required (e.g. "bouncer", "manager")
  *     execute(ctx): Promise<void>  — command handler
  *   }
@@ -27,6 +28,7 @@
  *     args:     string[]           — whitespace-split arguments
  *     rawArgs:  string             — everything after the command name
  *     message:  string             — full original message
+ *     messageId: string | null     — chat message id for the command message
  *     sender:   { userId, username, displayName }
  *     senderRole:      string      — sender's room role ("bouncer", "user", etc.)
  *     senderRoleLevel: number      — numeric privilege level of sender
@@ -167,6 +169,18 @@ export class CommandRegistry {
   async dispatch(ctx, name) {
     const cmd = this.resolve(name);
     if (!cmd) return; // silently ignore unknown commands
+
+    const deleteOnMs = Number(cmd.deleteOn ?? 0);
+    if (Number.isFinite(deleteOnMs) && deleteOnMs > 0) {
+      const baseReply = ctx.reply;
+      ctx.reply = async (text) => {
+        const res = await baseReply(text);
+        const msg = res?.data?.data?.message ?? res?.data?.message ?? null;
+        const id = msg?.id ?? res?.data?.id ?? null;
+        if (id) ctx.bot.scheduleMessageDelete(id, deleteOnMs);
+        return res;
+      };
+    }
 
     // ── Role check ────────────────────────────────────────────────────────────
     if (cmd.minRole) {

@@ -55,6 +55,12 @@
             "usage": "!ping",
             "reply": "Pong, {user}! {ms}ms"
         },
+        "cmddelete": {
+            "description": "Toggle command message cleanup.",
+            "usage": "!cmddelete [on|off]",
+            "enabled": "Command cleanup enabled.",
+            "disabled": "Command cleanup disabled."
+        },
         "start": {
             "description": "Resume the bot.",
             "usage": "!start",

@@ -5,6 +5,8 @@
     "apiUrl": "https://prod.borealise.com/api",
     "wsUrl": "wss://prod.borealise.com/ws",
     "cmdPrefix": "!",
+    "deleteCommandMessagesEnabled": true,
+    "deleteCommandMessagesDelayMs": 1000,
     "autoWoot": true,
     "botMessage": "Oi! Sou um bot e não consigo conversar. 🤖 Use !help para ver o que posso fazer!",
     "botMentionCooldownMs": 30000,
