@@ -5,6 +5,7 @@
  */
 import { getSetting, setSetting } from "../../lib/storage.js";
 import { RUNTIME_SETTING_KEYS, parseSettingValue } from "../../lib/settings.js";
+import { ROLE_LEVELS } from "../../lib/permissions.js";
 
 const ALLOWED_KEYS = new Set(RUNTIME_SETTING_KEYS);
 
@@ -14,10 +15,10 @@ export default {
   descriptionKey: "commands.settings.description",
   usageKey: "commands.settings.usage",
   cooldown: 3000,
-  minRole: "manager",
+  minRole: "bouncer",
 
   async execute(ctx) {
-    const { args, reply, bot, t } = ctx;
+    const { args, reply, bot, t, senderRoleLevel } = ctx;
     const key = args[0];
     if (!key) {
       await reply(t("commands.settings.usageMessage"));
@@ -30,6 +31,12 @@ export default {
           keys: RUNTIME_SETTING_KEYS.join(", "),
         }),
       );
+      return;
+    }
+
+    const isManager = (senderRoleLevel ?? 0) >= ROLE_LEVELS.manager;
+    if (!isManager && key !== "duelMuteMin") {
+      await reply(t("commands.settings.noPermission", { key }));
       return;
     }
 

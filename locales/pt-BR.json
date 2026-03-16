@@ -137,7 +137,7 @@
         },
         "togglebl": {
             "description": "Ativa/desativa a blacklist.",
-            "usage": "!togglebl",
+            "usage": "!togglebl [on|off]",
             "enabled": "Blacklist ativada.",
             "disabled": "Blacklist desativada."
         },
@@ -156,7 +156,7 @@
         },
         "togglemotd": {
             "description": "Ativa/desativa o MOTD.",
-            "usage": "!togglemotd",
+            "usage": "!togglemotd [on|off]",
             "enabled": "MOTD ativado.",
             "disabled": "MOTD desativado."
         },
@@ -208,7 +208,7 @@
         },
         "timeguard": {
             "description": "Ativa/desativa o time guard.",
-            "usage": "!timeguard",
+            "usage": "!timeguard [on|off]",
             "enabled": "Time guard ativado.",
             "disabled": "Time guard desativado."
         },
@@ -287,7 +287,7 @@
         },
         "autowoot": {
             "description": "Ativa/desativa auto-woot.",
-            "usage": "!autowoot",
+            "usage": "!autowoot [on|off]",
             "enabled": "Auto-woot ativado.",
             "disabled": "Auto-woot desativado."
         },
@@ -297,15 +297,21 @@
             "usageMessage": "Uso: !settings <chave> [valor]",
             "list": "Chaves disponíveis: {keys}",
             "invalidKey": "Chave inválida.",
+            "noPermission": "Você precisa do cargo manager para usar a chave {key}.",
             "value": "{key} = {value}",
             "notFound": "Sem valor para {key}.",
             "updated": "{key} atualizado para {value}."
         },
         "welcome": {
             "description": "Ativa/desativa a saudação de entrada.",
-            "usage": "!welcome",
+            "usage": "!welcome [on|off]",
             "enabled": "Saudação ativada.",
             "disabled": "Saudação desativada."
+        },
+        "autowoot-link": {
+            "description": "Envia o link para a extensão auto-woot.",
+            "usage": "!autowoot-link",
+            "reply": "Melhor extensão auto-woot aqui: https://woot.niceatc.api.br"
         },
         "ba": {
             "description": "Responde com BA.",
@@ -409,6 +415,139 @@
                 "{name} foi removido da fila!",
                 "{name} perdeu a vez e saiu da fila!"
             ]
+        },
+        "active": {
+            "description": "Mostra quantos usuários falaram recentemente.",
+            "usage": "!active <minutos>",
+            "usageMessage": "Uso: !active <minutos>",
+            "reply": "Ativos nos últimos {window}: {count}."
+        },
+        "lastseen": {
+            "description": "Mostra a última interação de um usuário no chat.",
+            "usage": "!lastseen [usuario]",
+            "usageMessage": "Uso: !lastseen [usuario]",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "noRecord": "Sem registro de atividade para {user}.",
+            "reply": "{user} foi visto(a) há {duration}."
+        },
+        "jointime": {
+            "description": "Mostra há quanto tempo o usuário está na sala.",
+            "usage": "!jointime [usuario]",
+            "usageMessage": "Uso: !jointime [usuario]",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "noRecord": "Sem registro de entrada para {user}.",
+            "reply": "{user} está na sala há {duration}."
+        },
+        "link": {
+            "description": "Mostra o link da música atual.",
+            "usage": "!link",
+            "noTrack": "Nenhuma música tocando.",
+            "unavailable": "Link indisponível para esta fonte.",
+            "reply": "Link: {url}"
+        },
+        "mediaid": {
+            "description": "Mostra o ID da música atual.",
+            "usage": "!mediaid",
+            "noTrack": "Nenhuma música tocando.",
+            "noId": "Não consegui obter o ID da música.",
+            "reply": "ID da música: {id}"
+        },
+        "autoskip": {
+            "description": "Ativa/desativa o auto-skip de músicas travadas.",
+            "usage": "!autoskip [on|off]",
+            "enabled": "Auto-skip ativado.",
+            "disabled": "Auto-skip desativado."
+        },
+        "afkremoval": {
+            "description": "Ativa/desativa remoção de AFK da fila.",
+            "usage": "!afkremoval [on|off]",
+            "enabled": "Remoção de AFK ativada.",
+            "disabled": "Remoção de AFK desativada."
+        },
+        "afklimit": {
+            "description": "Define o tempo máximo de AFK em minutos.",
+            "usage": "!afklimit <minutos>",
+            "usageMessage": "Uso: !afklimit <minutos>",
+            "updated": "Limite de AFK definido para {minutes} min."
+        },
+        "afkreset": {
+            "description": "Reinicia o timer de AFK de um usuário.",
+            "usage": "!afkreset [usuario]",
+            "usageMessage": "Uso: !afkreset [usuario]",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "reset": "AFK de {user} resetado."
+        },
+        "afktime": {
+            "description": "Mostra há quanto tempo um usuário está AFK.",
+            "usage": "!afktime [usuario]",
+            "usageMessage": "Uso: !afktime [usuario]",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "noRecord": "Sem registro de AFK para {user}.",
+            "reply": "{user} está AFK há {duration}."
+        },
+        "duelmute": {
+            "description": "Define o mute do perdedor do duelo.",
+            "usage": "!duelmute <minutos>",
+            "usageMessage": "Uso: !duelmute <minutos>",
+            "updated": "Mute do duelo definido para {minutes} min."
+        },
+        "fortune": {
+            "description": "Mostra uma fortuna.",
+            "usage": "!fortune",
+            "reply": "Fortuna: {fortune}",
+            "lines": [
+                "Um novo caminho se abre.",
+                "Algo inesperado vai te favorecer.",
+                "Confie no seu ritmo.",
+                "Uma boa noticia chega em breve.",
+                "A paciencia vai te recompensar.",
+                "Um pequeno gesto trara grande retorno.",
+                "Mudancas positivas estao a caminho.",
+                "Voce esta mais perto do que pensa."
+            ]
+        },
+        "duel": {
+            "description": "Desafia um usuário para um duelo.",
+            "usage": "!duel <usuário>",
+            "usageMessage": "Uso: !duel <usuário>",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "self": "Você não pode duelar consigo mesmo.",
+            "cannotTargetBot": "Não posso duelar contra o bot.",
+            "alreadyPending": "Já existe um duelo pendente entre {challenger} e {target} (expira em {seconds}s).",
+            "challenge": "{challenger} desafiou {target}! {target}, use {accept} ou {recuse}.",
+            "accepted": "{target} aceitou o duelo!",
+            "suspenseLines": [
+                "O silencio toma conta da arena...",
+                "A poeira sobe e o destino decide...",
+                "Preparando o veredito do duelo..."
+            ],
+            "result": "Vencedor: {winner} | Perdedor: {loser}.",
+            "muted": "{user} foi mutado(a) por {minutes} min.",
+            "muteReason": "Derrota em duelo",
+            "muteFailed": "Falha ao mutar {user}: {error}",
+            "muteUnavailable": "Mute indisponível no momento.",
+            "muteRoleTooHigh": "Não posso mutar {user} (cargo alto).",
+            "noPermission": "Preciso do cargo bouncer para aplicar o mute do duelo.",
+            "noPending": "Não há duelo pendente.",
+            "notTarget": "Este duelo não é para você.",
+            "alreadyAccepted": "Este duelo já foi aceito.",
+            "expired": "O duelo expirou.",
+            "refused": "{target} recusou o duelo.",
+            "timeout": "{target} não aceitou a tempo.",
+            "cowardLines": [
+                "Fugiu da arena!",
+                "Correu do duelo!",
+                "O medo venceu desta vez.",
+                "Sumiu no nevoeiro do combate."
+            ]
+        },
+        "accept": {
+            "description": "Aceita um duelo pendente.",
+            "usage": "!accept"
+        },
+        "recuse": {
+            "description": "Recusa um duelo pendente.",
+            "usage": "!recuse"
         }
     },
     "events": {
@@ -424,6 +563,15 @@
         "timeGuard": {
             "description": "Pula músicas acima do limite configurado.",
             "skip": "Música longa ({minutes} min): {label}. Pulando..."
+        },
+        "autoSkip": {
+            "description": "Pula músicas travadas após o fim.",
+            "skip": "Auto-skip: música travada. Pulando..."
+        },
+        "afkRemoval": {
+            "description": "Remove usuários AFK da fila.",
+            "removed": "Removido {user} da fila por AFK ({duration}).",
+            "removeError": "Falha ao remover {user}: {error}"
         },
         "mediaCheck": {
             "description": "Verifica bloqueios/idade do YouTube e pula quando necessário.",

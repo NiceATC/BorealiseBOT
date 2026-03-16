@@ -23,10 +23,16 @@ This file lists which basicBot commands and features are implemented in this pro
 | togglebl                     | Implemented as `!togglebl`.                                         |
 | timeguard                    | Implemented as `!timeguard`.                                        |
 | maxlength                    | Implemented as `!maxlength`.                                        |
+| active                       | Implemented as `!active`.                                           |
+| afkremoval, afkreset         | Implemented as `!afkremoval` / `!afkreset`.                         |
+| afktime, afklimit            | Implemented as `!afktime` / `!afklimit`.                            |
+| autoskip                     | Implemented as `!autoskip`.                                         |
 | motd, togglemotd             | Implemented as `!motd` and `!togglemotd`.                           |
 | autowoot                     | Implemented as `!autowoot`.                                         |
 | welcome                      | Implemented as `!welcome`.                                          |
 | dclookup, dc                 | Implemented as `!dc` (10 min window).                               |
+| link                         | Implemented as `!link`.                                             |
+| jointime                     | Implemented as `!jointime`.                                         |
 | ba                           | Implemented as `!ba`.                                               |
 | 8ball, ask                   | Implemented as `!8ball` / `!ask`.                                   |
 | cookie                       | Implemented as `!cookie`.                                           |
@@ -72,13 +78,7 @@ This file lists which basicBot commands and features are implemented in this pro
 
 ### AFK and activity tools
 
-- active
-- afklimit
-- afkremoval
-- afkreset
-- afktime
 - autodisable
-- autoskip
 - restricteta
 - eta
 - usercommands
@@ -87,8 +87,6 @@ This file lists which basicBot commands and features are implemented in this pro
 ### Info / links / status
 
 - botname
-- link
-- jointime
 - whois
 - voteratio
 - songstats

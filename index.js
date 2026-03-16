@@ -6,7 +6,7 @@
  *   node --watch index.js          # auto-restart on changes (Node ≥ 18)
  *
  * Required env vars (read from .env):
- *   BOT_EMAIL, BOT_PASSWORD, BOT_ROOM
+ *   BOT_EMAIL, BOT_PASSWORD
  *
  * See .env.example for all available options.
  */
@@ -73,6 +73,7 @@ async function main() {
     locale = cfg.locale;
     printBanner({ name: "NiceATC", version: BOT_VERSION, locale });
     bot = new BorealiseBot(cfg);
+    await bot.loadAfkState();
     await bot.loadModules();
   } catch (err) {
     console.error(t("index.initFailed", { error: err.message }));

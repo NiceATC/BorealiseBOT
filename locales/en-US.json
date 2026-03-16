@@ -137,7 +137,7 @@
         },
         "togglebl": {
             "description": "Enable/disable the blacklist.",
-            "usage": "!togglebl",
+            "usage": "!togglebl [on|off]",
             "enabled": "Blacklist enabled.",
             "disabled": "Blacklist disabled."
         },
@@ -156,7 +156,7 @@
         },
         "togglemotd": {
             "description": "Toggle the MOTD.",
-            "usage": "!togglemotd",
+            "usage": "!togglemotd [on|off]",
             "enabled": "MOTD enabled.",
             "disabled": "MOTD disabled."
         },
@@ -208,7 +208,7 @@
         },
         "timeguard": {
             "description": "Toggle time guard.",
-            "usage": "!timeguard",
+            "usage": "!timeguard [on|off]",
             "enabled": "Time guard enabled.",
             "disabled": "Time guard disabled."
         },
@@ -287,7 +287,7 @@
         },
         "autowoot": {
             "description": "Toggle auto-woot.",
-            "usage": "!autowoot",
+            "usage": "!autowoot [on|off]",
             "enabled": "Auto-woot enabled.",
             "disabled": "Auto-woot disabled."
         },
@@ -297,15 +297,21 @@
             "usageMessage": "Usage: !settings <key> [value]",
             "list": "Available keys: {keys}",
             "invalidKey": "Invalid key.",
+            "noPermission": "You need the manager role to use key {key}.",
             "value": "{key} = {value}",
             "notFound": "No value for {key}.",
             "updated": "Updated {key} to {value}."
         },
         "welcome": {
             "description": "Toggle join welcome messages.",
-            "usage": "!welcome",
+            "usage": "!welcome [on|off]",
             "enabled": "Welcome messages enabled.",
             "disabled": "Welcome messages disabled."
+        },
+        "autowoot-link": {
+            "description": "Send link to auto-woot extension.",
+            "usage": "!autowoot-link",
+            "reply": "Get the auto-woot extension here: https://woot.niceatc.api.br"
         },
         "ba": {
             "description": "Responds with BA.",
@@ -409,6 +415,139 @@
                 "{name} is removed from the queue!",
                 "{name} loses the spot and leaves!"
             ]
+        },
+        "active": {
+            "description": "Show how many users chatted recently.",
+            "usage": "!active <minutes>",
+            "usageMessage": "Usage: !active <minutes>",
+            "reply": "Active in the last {window}: {count}."
+        },
+        "lastseen": {
+            "description": "Show when a user last spoke in chat.",
+            "usage": "!lastseen [user]",
+            "usageMessage": "Usage: !lastseen [user]",
+            "userNotFound": "User not found: {user}",
+            "noRecord": "No activity record for {user}.",
+            "reply": "{user} was last seen {duration} ago."
+        },
+        "jointime": {
+            "description": "Show how long a user has been in the room.",
+            "usage": "!jointime [user]",
+            "usageMessage": "Usage: !jointime [user]",
+            "userNotFound": "User not found: {user}",
+            "noRecord": "No join record for {user}.",
+            "reply": "{user} has been in the room for {duration}."
+        },
+        "link": {
+            "description": "Show the current track link.",
+            "usage": "!link",
+            "noTrack": "No track playing.",
+            "unavailable": "No link available for this source.",
+            "reply": "Link: {url}"
+        },
+        "mediaid": {
+            "description": "Show the current track ID.",
+            "usage": "!mediaid",
+            "noTrack": "No track playing.",
+            "noId": "Could not get a track ID.",
+            "reply": "Track ID: {id}"
+        },
+        "autoskip": {
+            "description": "Toggle auto-skip for stalled tracks.",
+            "usage": "!autoskip [on|off]",
+            "enabled": "Auto-skip enabled.",
+            "disabled": "Auto-skip disabled."
+        },
+        "afkremoval": {
+            "description": "Toggle AFK removal from the waitlist.",
+            "usage": "!afkremoval [on|off]",
+            "enabled": "AFK removal enabled.",
+            "disabled": "AFK removal disabled."
+        },
+        "afklimit": {
+            "description": "Set the AFK limit in minutes.",
+            "usage": "!afklimit <minutes>",
+            "usageMessage": "Usage: !afklimit <minutes>",
+            "updated": "AFK limit set to {minutes} min."
+        },
+        "afkreset": {
+            "description": "Reset a user's AFK timer.",
+            "usage": "!afkreset [user]",
+            "usageMessage": "Usage: !afkreset [user]",
+            "userNotFound": "User not found: {user}",
+            "reset": "Reset AFK timer for {user}."
+        },
+        "afktime": {
+            "description": "Show how long a user has been AFK.",
+            "usage": "!afktime [user]",
+            "usageMessage": "Usage: !afktime [user]",
+            "userNotFound": "User not found: {user}",
+            "noRecord": "No AFK record for {user}.",
+            "reply": "{user} has been AFK for {duration}."
+        },
+        "duelmute": {
+            "description": "Set the duel loser mute duration.",
+            "usage": "!duelmute <minutes>",
+            "usageMessage": "Usage: !duelmute <minutes>",
+            "updated": "Duel mute set to {minutes} min."
+        },
+        "fortune": {
+            "description": "Show a fortune.",
+            "usage": "!fortune",
+            "reply": "Fortune: {fortune}",
+            "lines": [
+                "A new path opens soon.",
+                "Something unexpected will help you.",
+                "Trust your pace.",
+                "Good news arrives shortly.",
+                "Patience will pay off.",
+                "A small gesture brings a big return.",
+                "Positive change is on the way.",
+                "You are closer than you think."
+            ]
+        },
+        "duel": {
+            "description": "Challenge a user to a duel.",
+            "usage": "!duel <user>",
+            "usageMessage": "Usage: !duel <user>",
+            "userNotFound": "User not found: {user}",
+            "self": "You cannot duel yourself.",
+            "cannotTargetBot": "I cannot duel the bot.",
+            "alreadyPending": "A duel is already pending between {challenger} and {target} (expires in {seconds}s).",
+            "challenge": "{challenger} challenged {target}! {target}, use {accept} or {recuse}.",
+            "accepted": "{target} accepted the duel!",
+            "suspenseLines": [
+                "Silence falls over the arena...",
+                "Dust rises as fate decides...",
+                "Preparing the duel verdict..."
+            ],
+            "result": "Winner: {winner} | Loser: {loser}.",
+            "muted": "{user} was muted for {minutes} min.",
+            "muteReason": "Lost a duel",
+            "muteFailed": "Failed to mute {user}: {error}",
+            "muteUnavailable": "Mute is unavailable right now.",
+            "muteRoleTooHigh": "I cannot mute {user} (role too high).",
+            "noPermission": "I need the bouncer role to apply duel mutes.",
+            "noPending": "There is no pending duel.",
+            "notTarget": "This duel is not for you.",
+            "alreadyAccepted": "This duel was already accepted.",
+            "expired": "The duel expired.",
+            "refused": "{target} refused the duel.",
+            "timeout": "{target} did not accept in time.",
+            "cowardLines": [
+                "Ran from the arena!",
+                "Fled the duel!",
+                "Fear won this time.",
+                "Vanished into the mist."
+            ]
+        },
+        "accept": {
+            "description": "Accept a pending duel.",
+            "usage": "!accept"
+        },
+        "recuse": {
+            "description": "Refuse a pending duel.",
+            "usage": "!recuse"
         }
     },
     "events": {
@@ -424,6 +563,15 @@
         "timeGuard": {
             "description": "Skips tracks longer than the configured limit.",
             "skip": "Track too long ({minutes} min): {label}. Skipping..."
+        },
+        "autoSkip": {
+            "description": "Skips stalled tracks after they end.",
+            "skip": "Auto-skip: track stalled. Skipping..."
+        },
+        "afkRemoval": {
+            "description": "Removes AFK users from the waitlist.",
+            "removed": "Removed {user} from the waitlist for AFK ({duration}).",
+            "removeError": "Failed to remove {user}: {error}"
         },
         "mediaCheck": {
             "description": "Checks YouTube availability/age restriction and skips if needed.",

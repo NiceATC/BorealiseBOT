@@ -13,8 +13,18 @@ const timeguard = {
   minRole: "bouncer",
 
   async execute(ctx) {
-    const { bot, reply, t } = ctx;
-    const enabled = !bot.cfg.timeGuardEnabled;
+    const { bot, args, reply, t } = ctx;
+    const action = String(args[0] ?? "").toLowerCase();
+    let enabled = Boolean(bot.cfg.timeGuardEnabled);
+
+    if (["on", "true", "1", "enable", "enabled"].includes(action)) {
+      enabled = true;
+    } else if (["off", "false", "0", "disable", "disabled"].includes(action)) {
+      enabled = false;
+    } else {
+      enabled = !enabled;
+    }
+
     bot.updateConfig("timeGuardEnabled", enabled);
     await setSetting("timeGuardEnabled", enabled);
     await reply(

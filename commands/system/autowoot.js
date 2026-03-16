@@ -15,12 +15,22 @@ export default {
   minRole: "manager",
 
   async execute(ctx) {
-    const { bot, reply, t } = ctx;
-    const next = !bot.cfg.autoWoot;
-    bot.updateConfig("autoWoot", next);
-    await setSetting("autoWoot", next);
+    const { bot, args, reply, t } = ctx;
+    const action = String(args[0] ?? "").toLowerCase();
+    let enabled = Boolean(bot.cfg.autoWoot);
+
+    if (["on", "true", "1", "enable", "enabled"].includes(action)) {
+      enabled = true;
+    } else if (["off", "false", "0", "disable", "disabled"].includes(action)) {
+      enabled = false;
+    } else {
+      enabled = !enabled;
+    }
+
+    bot.updateConfig("autoWoot", enabled);
+    await setSetting("autoWoot", enabled);
     await reply(
-      t(next ? "commands.autowoot.enabled" : "commands.autowoot.disabled"),
+      t(enabled ? "commands.autowoot.enabled" : "commands.autowoot.disabled"),
     );
   },
 };

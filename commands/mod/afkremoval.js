@@ -1,23 +1,17 @@
-/**
- * commands/welcome.js
- *
- * !welcome - alterna a saudacao de entrada
- */
-
 import { setSetting } from "../../lib/storage.js";
 
 export default {
-  name: "welcome",
-  aliases: ["greet", "boasvindas"],
-  descriptionKey: "commands.welcome.description",
-  usageKey: "commands.welcome.usage",
+  name: "afkremoval",
+  aliases: ["afkremove"],
+  descriptionKey: "commands.afkremoval.description",
+  usageKey: "commands.afkremoval.usage",
   cooldown: 5000,
   minRole: "bouncer",
 
   async execute(ctx) {
     const { bot, args, reply, t } = ctx;
     const action = String(args[0] ?? "").toLowerCase();
-    let enabled = Boolean(bot.cfg.greetEnabled);
+    let enabled = Boolean(bot.cfg.afkRemovalEnabled);
 
     if (["on", "true", "1", "enable", "enabled"].includes(action)) {
       enabled = true;
@@ -27,10 +21,14 @@ export default {
       enabled = !enabled;
     }
 
-    bot.updateConfig("greetEnabled", enabled);
-    await setSetting("greetEnabled", enabled);
+    bot.updateConfig("afkRemovalEnabled", enabled);
+    await setSetting("afkRemovalEnabled", enabled);
     await reply(
-      t(enabled ? "commands.welcome.enabled" : "commands.welcome.disabled"),
+      t(
+        enabled
+          ? "commands.afkremoval.enabled"
+          : "commands.afkremoval.disabled",
+      ),
     );
   },
 };

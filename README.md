@@ -17,7 +17,8 @@ cp .env.example .env
 # Fill in BOT_EMAIL and BOT_PASSWORD in .env
 
 # 3. Configure room + features
-# Edit config.json (room, feature flags, messages, etc.)
+# Copy config.example.json to config.json if needed, then edit
+# (room, feature flags, messages, etc.)
 
 # 4. Run
 npm start
@@ -61,15 +62,27 @@ BorealiseBOT/
       reload.js          — !reload
       reloadcmd.js       — !reloadcmd
     info/
+      active.js          — !active
+      autowoot.js        — !autowoot-link
+      ba.js              — !ba
+      jointime.js        — !jointime
+      lastseen.js        — !lastseen
+      link.js            — !link
+      mediaid.js         — !mediaid
       nowplaying.js      — !np / !nowplaying
-      stats.js           — !stats
       queue.js           — !queue
+      stats.js           — !stats
     music/
       woot.js            — !woot
       blacklist.js       — !blacklist
       togglebl.js        — !togglebl
       motd.js            — !motd / !togglemotd
     mod/
+      autoskip.js        — !autoskip
+      afkremoval.js      — !afkremoval
+      afklimit.js        — !afklimit
+      afkreset.js        — !afkreset
+      afktime.js         — !afktime
       skip.js            — !skip
       lock.js            — !lock / !unlock
       remove.js          — !remove
@@ -87,18 +100,20 @@ BorealiseBOT/
       settings.js        — !settings
       welcome.js         — !welcome
     fun/
-      ba.js              — !ba
       eightball.js       — !8ball / !ask
       cookie.js          — !cookie
+      duel.js            — !duel / !accept / !recuse / !duelmute
       ghostbuster.js     — !ghostbuster
       gif.js             — !gif / !giphy
       roulette.js        — !roulette / !join / !leave
       thor.js            — !thor
+      fortune.js         — !fortune
   events/
     index.js             ← EventRegistry (auto-load, cooldowns, enable/disable)
     core/
       greet.js           — welcome message on user join
     moderation/
+      afkRemoval.js      — remove AFK users from waitlist
       mediaCheck.js       — skip age-restricted/blocked tracks
       timeGuard.js       — skip long tracks
     queue/
@@ -112,12 +127,12 @@ BorealiseBOT/
 Use `!help` in chat to see the full list with aliases and usage.
 
 - Core: `!help`, `!ping`, `!start`, `!stop`, `!reload`, `!reloadcmd`
-- Info: `!np`/`!nowplaying`, `!stats`, `!queue`
+- Info: `!active`, `!lastseen`, `!jointime`, `!link`, `!mediaid`, `!autowoot-link`, `!np`/`!nowplaying`, `!stats`, `!queue`
 - Music: `!woot`, `!blacklist` (add/remove/list/info), `!togglebl`, `!motd`, `!togglemotd`
-- Moderation: `!skip`, `!lock`, `!unlock`, `!remove`, `!move`, `!swap`, `!timeguard`, `!maxlength`, `!kick`, `!mute`, `!unmute`, `!ban`, `!unban`
+- Moderation: `!autoskip`, `!afkremoval`, `!afklimit`, `!afkreset`, `!afktime`, `!duelmute`, `!skip`, `!lock`, `!unlock`, `!remove`, `!move`, `!swap`, `!timeguard`, `!maxlength`, `!kick`, `!mute`, `!unmute`, `!ban`, `!unban`
 - Queue: `!dc`, `!savequeue`
 - System: `!autowoot`, `!settings`, `!welcome`
-- Fun: `!ba`, `!8ball`/`!ask`, `!cookie`, `!ghostbuster`, `!gif`/`!giphy`, `!roulette`/`!join`/`!leave`, `!thor`
+- Fun: `!ba`, `!fortune`, `!duel`, `!accept`, `!recuse`, `!8ball`/`!ask`, `!cookie`, `!ghostbuster`, `!gif`/`!giphy`, `!roulette`/`!join`/`!leave`, `!thor`
 
 > **Role order (lowest → highest):** user · resident_dj · bouncer · manager · cohost · host  
 > Both the bot **and** the sender must hold the required role for moderation commands to work.
@@ -220,29 +235,36 @@ bot.events.disable("my-event");
 
 ### Settings (`config.json`)
 
-| Key                    | Default                              | Description                                    |
-| ---------------------- | ------------------------------------ | ---------------------------------------------- |
-| `room`                 | _(required)_                         | Room slug to join                              |
-| `locale`               | `pt-BR`                              | Default locale (`pt-BR` or `en-US`)            |
-| `apiUrl`               | `https://prod.borealise.com/api`     | REST API base URL                              |
-| `wsUrl`                | `wss://prod.borealise.com/ws`        | WebSocket pipeline URL                         |
-| `cmdPrefix`            | `!`                                  | Command prefix character                       |
-| `autoWoot`             | `true`                               | Auto-woot every new track                      |
-| `botMessage`           | `"Oi! Sou um bot…"`                  | Reply when @mentioned; leave empty to disable  |
-| `botMentionCooldownMs` | `30000`                              | Min ms between mention replies                 |
-| `greetEnabled`         | `true`                               | Send welcome message on user join              |
-| `greetMessage`         | `"🎵 Bem-vindo(a) à sala, @{name}!"` | Welcome template (`{name}` / `{username}`)     |
-| `greetCooldownMs`      | `3600000`                            | Per-user cooldown for greets (default: 1 hour) |
-| `motdEnabled`          | `false`                              | Enable MOTD                                    |
-| `motdInterval`         | `5`                                  | Songs between MOTD messages                    |
-| `motd`                 | `"Mensagem do dia"`                  | MOTD content                                   |
-| `intervalMessages`     | `[]`                                 | Interval messages list                         |
-| `messageInterval`      | `5`                                  | Songs between interval messages                |
-| `dcWindowMin`          | `10`                                 | Minutes allowed to restore DC position          |
-| `blacklistEnabled`     | `true`                               | Enable track blacklist                         |
-| `timeGuardEnabled`     | `false`                              | Enable time guard                              |
-| `maxSongLengthMin`     | `10`                                 | Max song length in minutes                     |
-| `mediaCheckDebug`      | `false`                              | Log details from mediaCheck                    |
+Defaults below are from `config.example.json`.
+
+| Key                    | Default                                | Description                                    |
+| ---------------------- | -------------------------------------- | ---------------------------------------------- |
+| `room`                 | _(required)_                           | Room slug to join                              |
+| `locale`               | `pt-BR`                                | Default locale (`pt-BR` or `en-US`)            |
+| `apiUrl`               | `https://prod.borealise.com/api`       | REST API base URL                              |
+| `wsUrl`                | `wss://prod.borealise.com/ws`          | WebSocket pipeline URL                         |
+| `cmdPrefix`            | `!`                                    | Command prefix character                       |
+| `autoWoot`             | `true`                                 | Auto-woot every new track                      |
+| `botMessage`           | `"Oi! Sou um bot…"`                    | Reply when @mentioned; leave empty to disable  |
+| `botMentionCooldownMs` | `30000`                                | Min ms between mention replies                 |
+| `greetEnabled`         | `true`                                 | Send welcome message on user join              |
+| `greetMessage`         | `"🎵 Bem-vindo(a) à sala, @{name}!"`   | Welcome template (`{name}` / `{username}`)     |
+| `greetBackMessage`     | `"🎵 Bem-vindo(a) de volta, @{name}!"` | Welcome-back template for returning users      |
+| `greetCooldownMs`      | `3600000`                              | Per-user cooldown for greets (default: 1 hour) |
+| `motdEnabled`          | `false`                                | Enable MOTD                                    |
+| `motdInterval`         | `5`                                    | Songs between MOTD messages                    |
+| `motd`                 | `"Mensagem do dia"`                    | MOTD content                                   |
+| `intervalMessages`     | `[]`                                   | Interval messages list                         |
+| `messageInterval`      | `5`                                    | Songs between interval messages                |
+| `dcWindowMin`          | `10`                                   | Minutes allowed to restore DC position         |
+| `blacklistEnabled`     | `true`                                 | Enable track blacklist                         |
+| `timeGuardEnabled`     | `false`                                | Enable time guard                              |
+| `maxSongLengthMin`     | `10`                                   | Max song length in minutes                     |
+| `autoSkipEnabled`      | `false`                                | Enable auto-skip for stalled tracks            |
+| `afkRemovalEnabled`    | `false`                                | Enable AFK removal from the waitlist           |
+| `afkLimitMin`          | `60`                                   | Minutes of inactivity before AFK removal       |
+| `duelMuteMin`          | `5`                                    | Duel loser mute duration in minutes            |
+| `mediaCheckDebug`      | `false`                                | Log details from mediaCheck                    |
 
 Settings changed via `!settings` are persisted and override `config.json` on startup.
 
@@ -275,6 +297,8 @@ The bot stores data in a local SQLite file named `borealisebot.sqlite`:
 - Runtime settings saved by `!settings`
 - Track blacklist entries
 - Waitlist snapshots for `!dc` restore
+- Greet state (welcome vs. welcome-back)
+- AFK activity state (last chat/join)
 
 ---
 

@@ -18,6 +18,7 @@
  */
 
 import { Events } from "@borealise/pipeline";
+import { getGreetState, upsertGreetState } from "../../lib/storage.js";
 
 export default {
   name: "greet",
@@ -47,10 +48,44 @@ export default {
 
     if (!display) return;
 
-    const template = String(bot.localizeValue(bot.cfg.greetMessage) ?? "")
+    let greetedAt = 0;
+    let greetedCount = 0;
+    try {
+      const state = await getGreetState(userId);
+      greetedAt = Number(state?.greeted_at ?? state?.greetedAt ?? 0);
+      greetedCount = Number(state?.greeted_count ?? state?.greetedCount ?? 0);
+    } catch {
+      greetedAt = 0;
+      greetedCount = 0;
+    }
+
+    const cooldownMs = Number(bot.cfg.greetCooldownMs) || 0;
+    if (greetedAt && cooldownMs > 0 && Date.now() - greetedAt < cooldownMs) {
+      return;
+    }
+
+    const isReturning = greetedCount > 0;
+    let base = isReturning ? bot.cfg.greetBackMessage : bot.cfg.greetMessage;
+    let template = String(bot.localizeValue(base) ?? "")
       .replace(/{name}/g, display)
-      .replace(/{username}/g, username ?? display);
+      .replace(/{username}/g, username ?? display)
+      .trim();
+
+    if (!template && isReturning) {
+      base = bot.cfg.greetMessage;
+      template = String(bot.localizeValue(base) ?? "")
+        .replace(/{name}/g, display)
+        .replace(/{username}/g, username ?? display)
+        .trim();
+    }
+
+    if (!template) return;
 
     await reply(template);
+    await upsertGreetState({
+      userId,
+      greetedAt: Date.now(),
+      greetedCount: greetedCount + 1,
+    });
   },
 };

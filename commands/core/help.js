@@ -6,6 +6,7 @@
  */
 
 import { ROLE_LEVELS } from "../../lib/permissions.js";
+import { sendChatChunks } from "../../helpers/chat.js";
 
 export default {
   name: "help",
@@ -61,10 +62,9 @@ export default {
       .map((c) => `!${c.name}`)
       .sort()
       .join("  ");
-    await reply(
-      t("commands.help.list", {
-        list,
-      }),
-    );
+    const message = t("commands.help.list", {
+      list,
+    });
+    await sendChatChunks(reply, message);
   },
 };
