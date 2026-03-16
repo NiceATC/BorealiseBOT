@@ -302,6 +302,67 @@
             "notFound": "Sem valor para {key}.",
             "updated": "{key} atualizado para {value}."
         },
+        "economy": {
+            "description": "Comandos de economia.",
+            "usage": "!economy <balance|transfer|top> ...",
+            "usageMessage": "Uso: !economy <balance|transfer|top> ..."
+        },
+        "balance": {
+            "description": "Mostra seu saldo de pontos.",
+            "usage": "!balance",
+            "reply": "Saldo: {balance} pontos.",
+            "disabled": "Economia está desativada.",
+            "noUser": "Não consegui identificar você.",
+            "cardTitle": "Saldo",
+            "cardBalance": "Saldo",
+            "cardPoints": "pontos"
+        },
+        "transfer": {
+            "description": "Transfere pontos para outro usuário.",
+            "usage": "!transfer <usuario> <pontos>",
+            "usageMessage": "Uso: !transfer <usuario> <pontos>",
+            "invalidAmount": "Valor inválido.",
+            "minAmount": "Valor mínimo: {min} pontos.",
+            "noUser": "Não consegui identificar você.",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "self": "Você não pode transferir para si mesmo.",
+            "cannotTargetBot": "Não posso transferir para o bot.",
+            "insufficient": "Saldo insuficiente. Você tem {balance} pontos.",
+            "success": "Transferido {amount} pontos para {user}. Saldo: {balance}.",
+            "disabled": "Economia está desativada.",
+            "failed": "Falha ao transferir pontos."
+        },
+        "top": {
+            "description": "Mostra o ranking de pontos.",
+            "usage": "!top [limite]",
+            "empty": "Sem dados de economia.",
+            "line": "#{pos} {user}: {balance} pontos",
+            "disabled": "Economia está desativada."
+        },
+        "perfil": {
+            "description": "Mostra seu nível e XP.",
+            "usage": "!perfil [usuario]",
+            "usageMessage": "Uso: !perfil [usuario]",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "noRecord": "Sem registro de XP para {user}.",
+            "reply": "Nível {level} | XP {xp}/{next} (faltam {remaining}) | Recompensa próx: {reward} pontos | Saldo: {balance}.",
+            "disabled": "XP está desativado.",
+            "nextBadge": "Badge próx: {badge}",
+            "nextAchievement": "Conquista próx: {achievement}",
+            "cardTitle": "Perfil",
+            "cardLevel": "Nível",
+            "cardXp": "XP",
+            "cardReward": "Recompensa próx nível",
+            "cardBalance": "Saldo",
+            "cardPoints": "pontos"
+        },
+        "xptop": {
+            "description": "Ranking de XP.",
+            "usage": "!xptop [limite]",
+            "empty": "Sem dados de XP.",
+            "line": "#{pos} {user}: nível {level} ({xp} XP)",
+            "disabled": "XP está desativado."
+        },
         "welcome": {
             "description": "Ativa/desativa a saudação de entrada.",
             "usage": "!welcome [on|off]",
@@ -548,6 +609,367 @@
         "recuse": {
             "description": "Recusa um duelo pendente.",
             "usage": "!recuse"
+        },
+        "hug": {
+            "description": "Abraça um usuário.",
+            "usage": "!hug [usuario]",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "selfLines": [
+                "{sender} se deu um abraco.",
+                "{sender} recebeu um abraco quentinho.",
+                "{sender} se abraçou para recarregar as energias."
+            ],
+            "targetLines": [
+                "{sender} deu um abraco em {target}.",
+                "Abraco enviado de {sender} para {target}.",
+                "{sender} abraçou {target}."
+            ]
+        },
+        "slap": {
+            "description": "Da um tapinha brincalhao.",
+            "usage": "!slap [usuario]",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "selfLines": [
+                "{sender} se deu um tapinha de leve.",
+                "{sender} tomou um bonk amistoso.",
+                "{sender} fez um tapinha para acordar."
+            ],
+            "targetLines": [
+                "{sender} deu um tapinha de leve em {target}.",
+                "{sender} aplicou um bonk amistoso em {target}.",
+                "{sender} deu um tapa brincalhao em {target}."
+            ]
+        },
+        "ship": {
+            "description": "Faz um ship entre duas pessoas.",
+            "usage": "!ship [usuario1] [usuario2]",
+            "reply": "{left} + {right} = {percent}%"
+        },
+        "coin": {
+            "description": "Joga uma moeda.",
+            "usage": "!coin",
+            "reply": "Resultado: {result}",
+            "results": [
+                "cara",
+                "coroa"
+            ]
+        },
+        "dice": {
+            "description": "Rola um dado.",
+            "usage": "!dice [lados]",
+            "reply": "Dado d{sides}: {roll}",
+            "invalidSides": "Numero de lados invalido (use entre 2 e 100)."
+        },
+        "roll": {
+            "description": "Gera um numero aleatorio.",
+            "usage": "!roll [min] [max]",
+            "usageMessage": "Uso: !roll [min] [max]",
+            "reply": "Resultado: {roll} (entre {min} e {max})"
+        },
+        "rps": {
+            "description": "Pedra, papel ou tesoura.",
+            "usage": "!rps <pedra|papel|tesoura>",
+            "usageMessage": "Uso: !rps <pedra|papel|tesoura>",
+            "reply": "Voce: {user} | Bot: {bot} | {result}",
+            "choice": {
+                "rock": "pedra",
+                "paper": "papel",
+                "scissors": "tesoura"
+            },
+            "result": {
+                "win": "voce ganhou",
+                "lose": "voce perdeu",
+                "draw": "empate"
+            }
+        },
+        "trivia": {
+            "description": "Pergunta de trivia.",
+            "usage": "!trivia [answer]",
+            "question": "Trivia: {question}",
+            "options": "Opcoes: {options}",
+            "answer": "Resposta: {answer}",
+            "noActive": "Nenhuma trivia ativa.",
+            "noQuestion": "Nao consegui carregar uma pergunta agora.",
+            "error": "Erro ao buscar trivia: {error}"
+        },
+        "roast": {
+            "description": "Solta uma zoeira leve.",
+            "usage": "!roast [usuario]",
+            "lines": [
+                "{target}, seu despertador tocou e pediu folga.",
+                "{target}, voce e a prova de que cafe faz milagres.",
+                "{target}, ate o bot carregou mais rapido.",
+                "{target}, sua energia de segunda-feira e forte.",
+                "{target}, seu modo economia de bateria e permanente."
+            ]
+        },
+        "compliment": {
+            "description": "Elogia alguem.",
+            "usage": "!compliment [usuario]",
+            "lines": [
+                "{target}, voce mandou bem hoje.",
+                "{target}, sua vibe e contagiante.",
+                "{target}, voce brilha sem esforço.",
+                "{target}, voce tem otimo gosto musical.",
+                "{target}, sua presenca deixa tudo melhor."
+            ]
+        },
+        "fact": {
+            "description": "Mostra um fato curioso.",
+            "usage": "!fact",
+            "reply": "Fato: {fact}",
+            "lines": [
+                "Os polvos tem tres coracoes.",
+                "Mel tem validade praticamente infinita.",
+                "Um dia em Venus e mais longo que um ano em Venus.",
+                "Algumas tartarugas conseguem respirar pelo bumbum.",
+                "Bananas sao tecnicamente frutas vermelhas.",
+                "O som viaja mais rapido na agua do que no ar."
+            ]
+        },
+        "joke": {
+            "description": "Conta uma piada.",
+            "usage": "!joke",
+            "reply": "Piada: {joke}",
+            "lines": [
+                "Por que o computador foi ao medico? Porque estava com virus.",
+                "Qual e o cafe mais perigoso do mundo? O ex-presso.",
+                "O que o zero disse para o oito? Belo cinto!",
+                "Por que o livro foi ao psicologo? Porque tinha muitos problemas.",
+                "Qual e o animal mais antigo? A zebra, porque e em preto e branco.",
+                "Por que a musica foi presa? Porque estava no volume maximo."
+            ]
+        },
+        "meme": {
+            "description": "Busca um meme no Reddit.",
+            "usage": "!meme",
+            "reply": "{title} — {url} (r/{subreddit})",
+            "notFound": "Nenhum meme encontrado agora.",
+            "error": "Erro ao buscar meme: {error}"
+        },
+        "lastplayed": {
+            "description": "Mostra a ultima musica tocada.",
+            "usage": "!lastplayed",
+            "reply": "Ultima: {label} (DJ: {dj})",
+            "empty": "Sem historico ainda."
+        },
+        "history": {
+            "description": "Mostra as ultimas musicas tocadas.",
+            "usage": "!history",
+            "reply": "Historico: {lines}",
+            "empty": "Sem historico ainda.",
+            "line": "#{pos} {label} (DJ: {dj})"
+        },
+        "topwoot": {
+            "description": "Ranking de woots dados.",
+            "usage": "!topwoot [limite]",
+            "reply": "Top woots: {lines}",
+            "empty": "Sem dados de woot.",
+            "line": "#{pos} {user}: {count} woots"
+        },
+        "topdj": {
+            "description": "Ranking de DJs por musicas tocadas.",
+            "usage": "!topdj [limite]",
+            "reply": "Top DJs: {lines}",
+            "empty": "Sem dados de DJ.",
+            "line": "#{pos} {user}: {count} musicas"
+        },
+        "topsongs": {
+            "description": "Ranking de musicas mais wootadas.",
+            "usage": "!topsongs [limite]",
+            "reply": "Top musicas: {lines}",
+            "empty": "Sem dados de musicas.",
+            "line": "#{pos} {label}: {woots} woots / {plays} tocadas"
+        },
+        "rank": {
+            "description": "Mostra seu rank de woots e DJ.",
+            "usage": "!rank [usuario]",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "noUser": "Nao consegui identificar voce.",
+            "empty": "Sem dados de rank para {user}.",
+            "reply": "{user}: {stats}",
+            "wootLine": "Woots: #{rank} ({count})",
+            "djLine": "DJ: #{rank} ({count})"
+        },
+        "casino": {
+            "description": "Jogos de cassino com apostas.",
+            "usage": "!casino <slots|roleta|dados> <aposta> [opcao]",
+            "usageMessage": "Uso: !casino <slots|roleta|dados> <aposta> [opcao]",
+            "disabled": "Cassino desativado.",
+            "noUser": "Nao consegui identificar voce.",
+            "invalidBet": "Aposta invalida.",
+            "minBet": "Aposta minima: {min} pontos.",
+            "maxBet": "Aposta maxima: {max} pontos.",
+            "insufficient": "Saldo insuficiente. Voce tem {balance} pontos.",
+            "cooldown": "Aguarde {seconds}s para apostar novamente.",
+            "slots": {
+                "win": "🎰 {reels} | Voce ganhou {win} pontos ({net}).",
+                "lose": "🎰 {reels} | Nao foi dessa vez.",
+                "jackpot": "🎰 {reels} | JACKPOT! {jackpot} pontos no bolo. Ganhou {win} ({net}).",
+                "cardTitle": "Slots",
+                "cardBet": "Aposta",
+                "cardWin": "Ganho",
+                "cardNet": "Saldo",
+                "cardJackpot": "Jackpot"
+            },
+            "roulette": {
+                "usageMessage": "Uso: !casino roleta <aposta> <vermelho|preto|verde>",
+                "win": "🎡 {choice} vs {result} ({number}) — ganhou {win} ({net}).",
+                "lose": "🎡 {choice} vs {result} ({number}) — perdeu.",
+                "color": {
+                    "red": "vermelho",
+                    "black": "preto",
+                    "green": "verde"
+                },
+                "cardTitle": "Roleta",
+                "cardBet": "Aposta",
+                "cardWin": "Ganho",
+                "cardNet": "Saldo",
+                "cardPick": "Palpite",
+                "cardResult": "Resultado"
+            },
+            "dice": {
+                "usageMessage": "Uso: !casino dados <aposta> <numero> (1-{sides})",
+                "win": "🎲 Saiu {roll}, voce escolheu {guess} — ganhou {win} ({net}).",
+                "lose": "🎲 Saiu {roll}, voce escolheu {guess} — perdeu."
+            }
+        },
+        "daily": {
+            "description": "Resgata a recompensa diaria.",
+            "usage": "!daily",
+            "disabled": "Economia desativada.",
+            "noUser": "Nao consegui identificar voce.",
+            "unavailable": "Recompensa diaria indisponivel.",
+            "cooldown": "Volte em {remaining}.",
+            "claimed": "Voce recebeu {amount} pontos. Sequencia: {streak}."
+        },
+        "shop": {
+            "description": "Mostra a loja de pontos.",
+            "usage": "!shop",
+            "disabled": "Economia desativada.",
+            "empty": "A loja esta vazia.",
+            "list": "Loja: {items}",
+            "line": "[{key}] {name} — {price} pontos{description}"
+        },
+        "buy": {
+            "description": "Compra um item da loja.",
+            "usage": "!buy <item>",
+            "usageMessage": "Uso: !buy <item>",
+            "disabled": "Economia desativada.",
+            "noUser": "Nao consegui identificar voce.",
+            "notFound": "Item nao encontrado: {item}",
+            "alreadyOwned": "Voce ja comprou: {item}",
+            "invalidItem": "Item invalido.",
+            "insufficient": "Saldo insuficiente. Voce tem {balance} pontos.",
+            "noPermission": "Nao tenho permissao para mover na fila.",
+            "notInQueue": "Voce nao esta na fila.",
+            "noMove": "Nao ha como mover sua posicao agora.",
+            "success": "Compra feita: {item}{extra}.",
+            "failed": "Falha ao aplicar a compra: {error}"
+        },
+        "work": {
+            "description": "Sistema de trabalho diario.",
+            "usage": "!work <list|choose|claim|status>",
+            "usageMessage": "Uso: !work <list|choose|claim|status>",
+            "disabled": "Economia desativada.",
+            "noUser": "Nao consegui identificar voce.",
+            "empty": "Nenhum trabalho configurado.",
+            "noJob": "Voce ainda nao escolheu um trabalho.",
+            "ready": "pronto",
+            "status": "Trabalho: {job} | Pagamento: {pay} pontos | Proximo: {remaining}",
+            "available": "disponivel",
+            "locked": "bloqueado",
+            "list": "Trabalhos: {items}",
+            "listLine": "[{key}] {name} (XP {xp}) — {pay} pontos [{status}]",
+            "chooseUsage": "Uso: !work choose <trabalho>",
+            "jobNotFound": "Trabalho nao encontrado: {job}",
+            "jobLocked": "{job} requer XP {xp}.",
+            "alreadySelected": "Voce ja esta nesse trabalho.",
+            "upgradeOnly": "Voce so pode trocar para um trabalho de nivel maior.",
+            "selected": "Trabalho escolhido: {job}.",
+            "cooldown": "Volte em {remaining}.",
+            "claimed": "Pagamento recebido ({job}): {pay} pontos."
+        },
+        "steal": {
+            "description": "Tenta roubar pontos de alguem.",
+            "usage": "!steal <usuario>",
+            "usageMessage": "Uso: !steal <usuario>",
+            "disabled": "Roubo desativado.",
+            "noUser": "Nao consegui identificar voce.",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "cannotTargetBot": "Nao posso roubar o bot.",
+            "self": "Voce nao pode roubar a si mesmo.",
+            "targetPoor": "{user} nao tem pontos suficientes para roubar.",
+            "success": "Voce roubou {amount} pontos de {user}.",
+            "failed": "O roubo falhou.",
+            "bailPaid": "Voce foi pego e pagou fianca de {amount} pontos.",
+            "noPermission": "Sem saldo para fianca e sem permissao para mute.",
+            "muted": "Voce foi preso e mutado por {minutes} min.",
+            "muteReason": "Falha em roubo",
+            "muteFailed": "Falha ao mutar: {error}"
+        },
+        "voteskip": {
+            "description": "Inicia uma votacao para pular a musica.",
+            "usage": "!voteskip",
+            "disabled": "Votekip desativado.",
+            "noUser": "Nao consegui identificar voce.",
+            "noTrack": "Nenhuma musica tocando.",
+            "expired": "Votacao encerrada sem votos suficientes.",
+            "alreadyVoted": "Voce ja votou.",
+            "started": "Votacao iniciada ({votes}/{needed}, ativos {active}). {seconds}s restantes.",
+            "voted": "Voto registrado ({votes}/{needed}, ativos {active}).",
+            "passed": "Votos suficientes! Pulando a musica...",
+            "failed": "Nao consegui pular a musica.",
+            "noPermission": "Preciso de cargo bouncer para pular a musica."
+        },
+        "hack": {
+            "description": "Hackeia um usuario (brincadeira).",
+            "usage": "!hack <usuario>",
+            "usageMessage": "Uso: !hack <usuario>",
+            "lines": [
+                "🔓 Hackeando {target}...",
+                "📂 Encontrando arquivos...",
+                "💳 Cartao encontrado...",
+                "❌ Brincadeira 😂"
+            ]
+        },
+        "virus": {
+            "description": "Dispara um virus fake.",
+            "usage": "!virus",
+            "lines": [
+                "🦠 Preparando virus...",
+                "📡 Enviando para a rede...",
+                "⚠️ Sistema instavel...",
+                "✅ Era so zoeira!"
+            ]
+        },
+        "summon": {
+            "description": "Invoca algo misterioso.",
+            "usage": "!summon",
+            "lines": [
+                "✨ Abrindo o portal...",
+                "🔮 Energias se acumulando...",
+                "⚡ Algo foi invocado!"
+            ]
+        },
+        "explode": {
+            "description": "Efeito de explosao fake.",
+            "usage": "!explode",
+            "lines": [
+                "💥 Carregando explosivos...",
+                "💣 Contagem regressiva...",
+                "💥 BOOM!"
+            ]
+        },
+        "fakeban": {
+            "description": "Banimento fake de um usuario.",
+            "usage": "!fakeban <usuario>",
+            "usageMessage": "Uso: !fakeban <usuario>",
+            "lines": [
+                "🚨 {target} foi denunciado(a)...",
+                "⛔ Banindo {target}...",
+                "✅ Brincadeira, {target} esta seguro(a)!"
+            ]
         }
     },
     "events": {
@@ -559,6 +981,18 @@
         },
         "greet": {
             "description": "Envia uma mensagem de boas-vindas quando um usuário entra."
+        },
+        "economyChat": {
+            "description": "Recompensas por mensagens no chat."
+        },
+        "economyDj": {
+            "description": "Recompensas para o DJ ao tocar músicas."
+        },
+        "economyVote": {
+            "description": "Recompensas por woots."
+        },
+        "economyGrab": {
+            "description": "Recompensas por grabs."
         },
         "timeGuard": {
             "description": "Pula músicas acima do limite configurado.",

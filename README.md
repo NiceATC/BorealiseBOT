@@ -37,6 +37,9 @@ BorealiseBOT/
   helpers/               ← shared helpers (fs, http, waitlist, etc.)
     banner.js            ← ASCII logo
     errors.js            ← retry error detection
+    imgbb.js             ← ImgBB upload helper
+    points.js            ← fixed-point points helpers
+    profile-card.js      ← profile/balance image renderer
     random.js            ← random helpers
     roulette.js          ← roulette state + close helper
     tenor.js             ← Tenor GIF helper
@@ -108,10 +111,23 @@ BorealiseBOT/
       roulette.js        — !roulette / !join / !leave
       thor.js            — !thor
       fortune.js         — !fortune
+    economy/
+      balance.js         — !balance
+      transfer.js        — !transfer
+      economy.js         — !economy
+      top.js             — !top
+    xp/
+      profile.js         — !perfil
+      xptop.js           — !xptop
   events/
     index.js             ← EventRegistry (auto-load, cooldowns, enable/disable)
     core/
       greet.js           — welcome message on user join
+    economy/
+      chatReward.js       — points/XP for chat messages
+      djReward.js         — points/XP for DJs
+      voteReward.js       — points/XP for woots
+      grabReward.js       — points/XP for grabs
     moderation/
       afkRemoval.js      — remove AFK users from waitlist
       mediaCheck.js       — skip age-restricted/blocked tracks
@@ -127,12 +143,14 @@ BorealiseBOT/
 Use `!help` in chat to see the full list with aliases and usage.
 
 - Core: `!help`, `!ping`, `!start`, `!stop`, `!reload`, `!reloadcmd`
-- Info: `!active`, `!lastseen`, `!jointime`, `!link`, `!mediaid`, `!autowoot-link`, `!np`/`!nowplaying`, `!stats`, `!queue`
-- Music: `!woot`, `!blacklist` (add/remove/list/info), `!togglebl`, `!motd`, `!togglemotd`
+- Info: `!active`, `!lastseen`, `!jointime`, `!link`, `!mediaid`, `!autowoot-link`, `!np`/`!nowplaying`, `!stats`, `!queue`, `!lastplayed`, `!history`, `!topwoot`, `!topdj`, `!topsongs`, `!rank`
+- Music: `!woot`, `!blacklist` (add/remove/list/info), `!togglebl`, `!motd`, `!togglemotd`, `!voteskip`
 - Moderation: `!autoskip`, `!afkremoval`, `!afklimit`, `!afkreset`, `!afktime`, `!duelmute`, `!skip`, `!lock`, `!unlock`, `!remove`, `!move`, `!swap`, `!timeguard`, `!maxlength`, `!kick`, `!mute`, `!unmute`, `!ban`, `!unban`
 - Queue: `!dc`, `!savequeue`
 - System: `!autowoot`, `!settings`, `!welcome`
-- Fun: `!ba`, `!fortune`, `!duel`, `!accept`, `!recuse`, `!8ball`/`!ask`, `!cookie`, `!ghostbuster`, `!gif`/`!giphy`, `!roulette`/`!join`/`!leave`, `!thor`
+- Fun: `!ba`, `!fortune`, `!duel`, `!accept`, `!recuse`, `!8ball`/`!ask`, `!cookie`, `!ghostbuster`, `!gif`/`!giphy`, `!roulette`/`!join`/`!leave`, `!thor`, `!hug`, `!slap`, `!ship`, `!coin`, `!dice`, `!roll`, `!rps`, `!trivia`, `!roast`, `!compliment`, `!fact`, `!joke`, `!meme`, `!hack`, `!virus`, `!summon`, `!explode`, `!fakeban`
+- Economy: `!balance`, `!transfer`, `!economy`, `!top`, `!casino`, `!daily`, `!shop`, `!buy`, `!work`, `!steal`
+- XP: `!perfil`, `!xptop`
 
 > **Role order (lowest → highest):** user · resident_dj · bouncer · manager · cohost · host  
 > Both the bot **and** the sender must hold the required role for moderation commands to work.
@@ -228,45 +246,104 @@ bot.events.disable("my-event");
 
 ### Secrets (`.env`)
 
-| Variable       | Required | Description          |
-| -------------- | -------- | -------------------- |
-| `BOT_EMAIL`    | yes      | Bot account e-mail   |
-| `BOT_PASSWORD` | yes      | Bot account password |
+| Variable        | Required | Description                             |
+| --------------- | -------- | --------------------------------------- |
+| `BOT_EMAIL`     | yes      | Bot account e-mail                      |
+| `BOT_PASSWORD`  | yes      | Bot account password                    |
+| `IMGBB_API_KEY` | no       | ImgBB uploads for profile/balance cards |
 
 ### Settings (`config.json`)
 
 Defaults below are from `config.example.json`.
 
-| Key                    | Default                                | Description                                    |
-| ---------------------- | -------------------------------------- | ---------------------------------------------- |
-| `room`                 | _(required)_                           | Room slug to join                              |
-| `locale`               | `pt-BR`                                | Default locale (`pt-BR` or `en-US`)            |
-| `apiUrl`               | `https://prod.borealise.com/api`       | REST API base URL                              |
-| `wsUrl`                | `wss://prod.borealise.com/ws`          | WebSocket pipeline URL                         |
-| `cmdPrefix`            | `!`                                    | Command prefix character                       |
-| `autoWoot`             | `true`                                 | Auto-woot every new track                      |
-| `botMessage`           | `"Oi! Sou um bot…"`                    | Reply when @mentioned; leave empty to disable  |
-| `botMentionCooldownMs` | `30000`                                | Min ms between mention replies                 |
-| `greetEnabled`         | `true`                                 | Send welcome message on user join              |
-| `greetMessage`         | `"🎵 Bem-vindo(a) à sala, @{name}!"`   | Welcome template (`{name}` / `{username}`)     |
-| `greetBackMessage`     | `"🎵 Bem-vindo(a) de volta, @{name}!"` | Welcome-back template for returning users      |
-| `greetCooldownMs`      | `3600000`                              | Per-user cooldown for greets (default: 1 hour) |
-| `motdEnabled`          | `false`                                | Enable MOTD                                    |
-| `motdInterval`         | `5`                                    | Songs between MOTD messages                    |
-| `motd`                 | `"Mensagem do dia"`                    | MOTD content                                   |
-| `intervalMessages`     | `[]`                                   | Interval messages list                         |
-| `messageInterval`      | `5`                                    | Songs between interval messages                |
-| `dcWindowMin`          | `10`                                   | Minutes allowed to restore DC position         |
-| `blacklistEnabled`     | `true`                                 | Enable track blacklist                         |
-| `timeGuardEnabled`     | `false`                                | Enable time guard                              |
-| `maxSongLengthMin`     | `10`                                   | Max song length in minutes                     |
-| `autoSkipEnabled`      | `false`                                | Enable auto-skip for stalled tracks            |
-| `afkRemovalEnabled`    | `false`                                | Enable AFK removal from the waitlist           |
-| `afkLimitMin`          | `60`                                   | Minutes of inactivity before AFK removal       |
-| `duelMuteMin`          | `5`                                    | Duel loser mute duration in minutes            |
-| `mediaCheckDebug`      | `false`                                | Log details from mediaCheck                    |
+| Key                             | Default                                | Description                                            |
+| ------------------------------- | -------------------------------------- | ------------------------------------------------------ |
+| `room`                          | _(required)_                           | Room slug to join                                      |
+| `locale`                        | `pt-BR`                                | Default locale (`pt-BR` or `en-US`)                    |
+| `apiUrl`                        | `https://prod.borealise.com/api`       | REST API base URL                                      |
+| `wsUrl`                         | `wss://prod.borealise.com/ws`          | WebSocket pipeline URL                                 |
+| `cmdPrefix`                     | `!`                                    | Command prefix character                               |
+| `autoWoot`                      | `true`                                 | Auto-woot every new track                              |
+| `botMessage`                    | `"Oi! Sou um bot…"`                    | Reply when @mentioned; leave empty to disable          |
+| `botMentionCooldownMs`          | `30000`                                | Min ms between mention replies                         |
+| `greetEnabled`                  | `true`                                 | Send welcome message on user join                      |
+| `greetMessage`                  | `"🎵 Bem-vindo(a) à sala, @{name}!"`   | Welcome template (`{name}` / `{username}`)             |
+| `greetBackMessage`              | `"🎵 Bem-vindo(a) de volta, @{name}!"` | Welcome-back template for returning users              |
+| `greetCooldownMs`               | `3600000`                              | Per-user cooldown for greets (default: 1 hour)         |
+| `motdEnabled`                   | `false`                                | Enable MOTD                                            |
+| `motdInterval`                  | `5`                                    | Songs between MOTD messages                            |
+| `motd`                          | `"Mensagem do dia"`                    | MOTD content                                           |
+| `intervalMessages`              | `[]`                                   | Interval messages list                                 |
+| `messageInterval`               | `5`                                    | Songs between interval messages                        |
+| `dcWindowMin`                   | `10`                                   | Minutes allowed to restore DC position                 |
+| `blacklistEnabled`              | `true`                                 | Enable track blacklist                                 |
+| `timeGuardEnabled`              | `false`                                | Enable time guard                                      |
+| `maxSongLengthMin`              | `10`                                   | Max song length in minutes                             |
+| `autoSkipEnabled`               | `false`                                | Enable auto-skip for stalled tracks                    |
+| `afkRemovalEnabled`             | `false`                                | Enable AFK removal from the waitlist                   |
+| `afkLimitMin`                   | `60`                                   | Minutes of inactivity before AFK removal               |
+| `duelMuteMin`                   | `5`                                    | Duel loser mute duration in minutes                    |
+| `economyEnabled`                | `true`                                 | Enable economy rewards                                 |
+| `economyChatPoints`             | `0.2`                                  | Points per rewarded chat message                       |
+| `economyChatCooldownMs`         | `90000`                                | Min ms between chat rewards per user                   |
+| `economyDjPoints`               | `2`                                    | Points for playing a track                             |
+| `economyWootPoints`             | `0.1`                                  | Points per woot                                        |
+| `economyGrabPoints`             | `0.2`                                  | Points per grab                                        |
+| `economyOnlinePointsPerHour`    | `0.25`                                 | Points per hour online                                 |
+| `economyTransferMin`            | `5`                                    | Minimum transfer amount                                |
+| `xpEnabled`                     | `true`                                 | Enable XP rewards                                      |
+| `xpChatPoints`                  | `0.2`                                  | XP per rewarded chat message                           |
+| `xpChatCooldownMs`              | `90000`                                | Min ms between chat XP rewards per user                |
+| `xpDjPoints`                    | `2`                                    | XP for playing a track                                 |
+| `xpWootPoints`                  | `0.1`                                  | XP per woot                                            |
+| `xpGrabPoints`                  | `0.2`                                  | XP per grab                                            |
+| `xpOnlinePointsPerHour`         | `0.25`                                 | XP per hour online                                     |
+| `xpBase`                        | `80`                                   | Base XP for next level                                 |
+| `xpExponent`                    | `1.5`                                  | XP curve exponent                                      |
+| `xpRewardBasePoints`            | `1`                                    | Base points rewarded on level up                       |
+| `xpRewardStepPoints`            | `0.5`                                  | Extra points per level on level up                     |
+| `xpBadgeRewards`                | `{}`                                   | Level → badge map (future use)                         |
+| `xpAchievementRewards`          | `{}`                                   | Level → achievement map (future use)                   |
+| `leaderboardReset`              | `weekly`                               | Reset schedule (`daily`, `weekly`, `monthly`, `never`) |
+| `memeSubreddits`                | `["memes", "wholesomememes", "funny"]` | Subreddits used by `!meme`                             |
+| `casinoEnabled`                 | `true`                                 | Enable casino games                                    |
+| `casinoMinBet`                  | `1`                                    | Minimum bet amount                                     |
+| `casinoMaxBet`                  | `100`                                  | Maximum bet amount                                     |
+| `casinoCooldownMs`              | `5000`                                 | Cooldown between bets                                  |
+| `casinoBetMultiplierFactor`     | `0.01`                                 | Bet scaling factor for multipliers                     |
+| `casinoMultiplierMax`           | `6`                                    | Max multiplier after scaling                           |
+| `casinoSlotsSymbols`            | `[...]`                                | Slots symbols (emoji/weight/multiplier)                |
+| `casinoSlotsPairMultiplier`     | `1.2`                                  | Slots multiplier for two-of-a-kind                     |
+| `casinoJackpotEnabled`          | `true`                                 | Enable slots jackpot                                   |
+| `casinoJackpotLossShare`        | `0.1`                                  | Share of losses added to jackpot                       |
+| `casinoJackpotSymbol`           | `"💎"`                                 | Jackpot symbol (3x triggers jackpot)                   |
+| `casinoRouletteBetMultiplierFactor` | `0`                                | Roulette bet scaling factor                            |
+| `casinoRouletteRedMultiplier`   | `2`                                    | Roulette multiplier for red                            |
+| `casinoRouletteBlackMultiplier` | `2`                                    | Roulette multiplier for black                          |
+| `casinoRouletteGreenMultiplier` | `14`                                   | Roulette multiplier for green                          |
+| `casinoDiceSides`               | `6`                                    | Dice sides for casino dice                             |
+| `casinoDiceWinMultiplier`       | `6`                                    | Dice multiplier on exact match                         |
+| `dailyRewardAmount`             | `5`                                    | Daily reward points                                    |
+| `dailyRewardCooldownMs`         | `86400000`                             | Daily reward cooldown (ms)                             |
+| `shopItems`                     | `[...]`                                | Shop items list                                        |
+| `workJobs`                      | `[...]`                                | Jobs list (xpMin/pay)                                  |
+| `workCooldownMs`                | `86400000`                             | Work claim cooldown (ms)                               |
+| `stealEnabled`                  | `true`                                 | Enable steal command                                   |
+| `stealMinAmount`                | `0.5`                                  | Minimum steal amount                                   |
+| `stealMaxAmount`                | `2`                                    | Maximum steal amount                                   |
+| `stealFailChance`               | `0.3`                                  | Chance of failed steal                                 |
+| `stealBailAmount`               | `3`                                    | Bail amount on failure                                 |
+| `stealMuteMinutes`              | `10`                                   | Mute duration if bail fails                            |
+| `voteSkipEnabled`               | `true`                                 | Enable vote skip                                       |
+| `voteSkipThreshold`             | `0.3`                                  | Portion of active users required                       |
+| `voteSkipDurationMs`            | `60000`                                | Vote duration (ms)                                     |
+| `voteSkipActiveWindowMs`        | `1800000`                              | Active window for vote count (ms)                      |
+| `imageRenderingEnabled`         | `true`                                 | Enable ImgBB profile/balance cards                     |
+| `mediaCheckDebug`               | `false`                                | Log details from mediaCheck                            |
 
 Settings changed via `!settings` are persisted and override `config.json` on startup.
+
+Profile/balance/casino image cards require `IMGBB_API_KEY` and `imageRenderingEnabled: true`.
 
 ---
 
@@ -299,6 +376,14 @@ The bot stores data in a local SQLite file named `borealisebot.sqlite`:
 - Waitlist snapshots for `!dc` restore
 - Greet state (welcome vs. welcome-back)
 - AFK activity state (last chat/join)
+- Track history (last played)
+- Leaderboard stats (woots, DJ plays, top songs)
+- Daily reward claims
+- Work assignments/claims
+- Shop purchases
+- Casino jackpot pool
+- Economy balances
+- XP state (level/xp totals)
 
 ---
 

@@ -34,3 +34,21 @@ export async function sendChatChunks(sendFn, text, maxLen = DEFAULT_MAX_LEN) {
   }
   return chunks.length;
 }
+
+export function sendChatSequence(sendFn, lines, delayMs = 1200) {
+  if (typeof sendFn !== "function") return 0;
+  if (!Array.isArray(lines) || lines.length === 0) return 0;
+
+  const delay = Math.max(0, Number(delayMs) || 0);
+  let count = 0;
+  lines.forEach((line, index) => {
+    const text = normalizeText(line);
+    if (!text) return;
+    count += 1;
+    setTimeout(() => {
+      sendFn(text).catch(() => {});
+    }, delay * index);
+  });
+
+  return count;
+}

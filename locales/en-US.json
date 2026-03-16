@@ -302,6 +302,67 @@
             "notFound": "No value for {key}.",
             "updated": "Updated {key} to {value}."
         },
+        "economy": {
+            "description": "Economy commands.",
+            "usage": "!economy <balance|transfer|top> ...",
+            "usageMessage": "Usage: !economy <balance|transfer|top> ..."
+        },
+        "balance": {
+            "description": "Show your point balance.",
+            "usage": "!balance",
+            "reply": "Balance: {balance} points.",
+            "disabled": "Economy is disabled.",
+            "noUser": "Could not identify you.",
+            "cardTitle": "Balance",
+            "cardBalance": "Balance",
+            "cardPoints": "points"
+        },
+        "transfer": {
+            "description": "Transfer points to another user.",
+            "usage": "!transfer <user> <points>",
+            "usageMessage": "Usage: !transfer <user> <points>",
+            "invalidAmount": "Invalid amount.",
+            "minAmount": "Minimum amount: {min} points.",
+            "noUser": "Could not identify you.",
+            "userNotFound": "User not found: {user}",
+            "self": "You cannot transfer to yourself.",
+            "cannotTargetBot": "I cannot transfer to the bot.",
+            "insufficient": "Insufficient balance. You have {balance} points.",
+            "success": "Transferred {amount} points to {user}. Balance: {balance}.",
+            "disabled": "Economy is disabled.",
+            "failed": "Failed to transfer points."
+        },
+        "top": {
+            "description": "Show the points leaderboard.",
+            "usage": "!top [limit]",
+            "empty": "No economy data yet.",
+            "line": "#{pos} {user}: {balance} points",
+            "disabled": "Economy is disabled."
+        },
+        "perfil": {
+            "description": "Show your level and XP.",
+            "usage": "!perfil [user]",
+            "usageMessage": "Usage: !perfil [user]",
+            "userNotFound": "User not found: {user}",
+            "noRecord": "No XP record for {user}.",
+            "reply": "Level {level} | XP {xp}/{next} ({remaining} left) | Next reward: {reward} points | Balance: {balance}.",
+            "disabled": "XP is disabled.",
+            "nextBadge": "Next badge: {badge}",
+            "nextAchievement": "Next achievement: {achievement}",
+            "cardTitle": "Profile",
+            "cardLevel": "Level",
+            "cardXp": "XP",
+            "cardReward": "Next reward",
+            "cardBalance": "Balance",
+            "cardPoints": "points"
+        },
+        "xptop": {
+            "description": "XP leaderboard.",
+            "usage": "!xptop [limit]",
+            "empty": "No XP data yet.",
+            "line": "#{pos} {user}: level {level} ({xp} XP)",
+            "disabled": "XP is disabled."
+        },
         "welcome": {
             "description": "Toggle join welcome messages.",
             "usage": "!welcome [on|off]",
@@ -548,6 +609,367 @@
         "recuse": {
             "description": "Refuse a pending duel.",
             "usage": "!recuse"
+        },
+        "hug": {
+            "description": "Hug a user.",
+            "usage": "!hug [user]",
+            "userNotFound": "User not found: {user}",
+            "selfLines": [
+                "{sender} gives themselves a hug.",
+                "{sender} gets a cozy hug.",
+                "{sender} hugs themselves to recharge."
+            ],
+            "targetLines": [
+                "{sender} hugs {target}.",
+                "Hug sent from {sender} to {target}.",
+                "{sender} gives {target} a warm hug."
+            ]
+        },
+        "slap": {
+            "description": "Give a playful tap.",
+            "usage": "!slap [user]",
+            "userNotFound": "User not found: {user}",
+            "selfLines": [
+                "{sender} gives themselves a gentle tap.",
+                "{sender} gets a friendly bonk.",
+                "{sender} taps themselves to wake up."
+            ],
+            "targetLines": [
+                "{sender} gives {target} a gentle tap.",
+                "{sender} lands a friendly bonk on {target}.",
+                "{sender} gives {target} a playful slap."
+            ]
+        },
+        "ship": {
+            "description": "Ship two people.",
+            "usage": "!ship [user1] [user2]",
+            "reply": "{left} + {right} = {percent}%"
+        },
+        "coin": {
+            "description": "Flip a coin.",
+            "usage": "!coin",
+            "reply": "Result: {result}",
+            "results": [
+                "heads",
+                "tails"
+            ]
+        },
+        "dice": {
+            "description": "Roll a die.",
+            "usage": "!dice [sides]",
+            "reply": "d{sides}: {roll}",
+            "invalidSides": "Invalid sides (use 2 to 100)."
+        },
+        "roll": {
+            "description": "Generate a random number.",
+            "usage": "!roll [min] [max]",
+            "usageMessage": "Usage: !roll [min] [max]",
+            "reply": "Result: {roll} (between {min} and {max})"
+        },
+        "rps": {
+            "description": "Rock, paper, scissors.",
+            "usage": "!rps <rock|paper|scissors>",
+            "usageMessage": "Usage: !rps <rock|paper|scissors>",
+            "reply": "You: {user} | Bot: {bot} | {result}",
+            "choice": {
+                "rock": "rock",
+                "paper": "paper",
+                "scissors": "scissors"
+            },
+            "result": {
+                "win": "you win",
+                "lose": "you lose",
+                "draw": "draw"
+            }
+        },
+        "trivia": {
+            "description": "Trivia question.",
+            "usage": "!trivia [answer]",
+            "question": "Trivia: {question}",
+            "options": "Options: {options}",
+            "answer": "Answer: {answer}",
+            "noActive": "No active trivia.",
+            "noQuestion": "Could not load a question right now.",
+            "error": "Trivia error: {error}"
+        },
+        "roast": {
+            "description": "Deliver a mild roast.",
+            "usage": "!roast [user]",
+            "lines": [
+                "{target}, your alarm clock asked for a day off.",
+                "{target}, you are proof that coffee is magic.",
+                "{target}, even the bot loaded faster.",
+                "{target}, your Monday energy is strong.",
+                "{target}, your battery saver seems permanent."
+            ]
+        },
+        "compliment": {
+            "description": "Give someone a compliment.",
+            "usage": "!compliment [user]",
+            "lines": [
+                "{target}, you nailed it today.",
+                "{target}, your vibe is contagious.",
+                "{target}, you shine without trying.",
+                "{target}, you have excellent music taste.",
+                "{target}, your presence makes things better."
+            ]
+        },
+        "fact": {
+            "description": "Share a fun fact.",
+            "usage": "!fact",
+            "reply": "Fact: {fact}",
+            "lines": [
+                "Octopuses have three hearts.",
+                "Honey never really spoils.",
+                "A day on Venus is longer than a year on Venus.",
+                "Some turtles can breathe through their backsides.",
+                "Bananas are technically berries.",
+                "Sound travels faster in water than in air."
+            ]
+        },
+        "joke": {
+            "description": "Tell a joke.",
+            "usage": "!joke",
+            "reply": "Joke: {joke}",
+            "lines": [
+                "Why did the computer go to the doctor? It had a virus.",
+                "Why did the scarecrow win an award? It was outstanding in its field.",
+                "What did zero say to eight? Nice belt!",
+                "Why did the book go to therapy? It had too many problems.",
+                "Why did the music get arrested? It was too loud.",
+                "Why did the math book look sad? It had too many problems."
+            ]
+        },
+        "meme": {
+            "description": "Fetch a meme from Reddit.",
+            "usage": "!meme",
+            "reply": "{title} — {url} (r/{subreddit})",
+            "notFound": "No meme found right now.",
+            "error": "Meme error: {error}"
+        },
+        "lastplayed": {
+            "description": "Show the last played track.",
+            "usage": "!lastplayed",
+            "reply": "Last played: {label} (DJ: {dj})",
+            "empty": "No history yet."
+        },
+        "history": {
+            "description": "Show the last played tracks.",
+            "usage": "!history",
+            "reply": "History: {lines}",
+            "empty": "No history yet.",
+            "line": "#{pos} {label} (DJ: {dj})"
+        },
+        "topwoot": {
+            "description": "Leaderboard for woots given.",
+            "usage": "!topwoot [limit]",
+            "reply": "Top woots: {lines}",
+            "empty": "No woot data yet.",
+            "line": "#{pos} {user}: {count} woots"
+        },
+        "topdj": {
+            "description": "Leaderboard for DJs by plays.",
+            "usage": "!topdj [limit]",
+            "reply": "Top DJs: {lines}",
+            "empty": "No DJ data yet.",
+            "line": "#{pos} {user}: {count} plays"
+        },
+        "topsongs": {
+            "description": "Leaderboard for top wooted tracks.",
+            "usage": "!topsongs [limit]",
+            "reply": "Top tracks: {lines}",
+            "empty": "No track data yet.",
+            "line": "#{pos} {label}: {woots} woots / {plays} plays"
+        },
+        "rank": {
+            "description": "Show your woot/DJ rank.",
+            "usage": "!rank [user]",
+            "userNotFound": "User not found: {user}",
+            "noUser": "Could not identify you.",
+            "empty": "No rank data for {user}.",
+            "reply": "{user}: {stats}",
+            "wootLine": "Woots: #{rank} ({count})",
+            "djLine": "DJ: #{rank} ({count})"
+        },
+        "casino": {
+            "description": "Casino games with bets.",
+            "usage": "!casino <slots|roulette|dice> <bet> [option]",
+            "usageMessage": "Usage: !casino <slots|roulette|dice> <bet> [option]",
+            "disabled": "Casino is disabled.",
+            "noUser": "Could not identify you.",
+            "invalidBet": "Invalid bet.",
+            "minBet": "Minimum bet: {min} points.",
+            "maxBet": "Maximum bet: {max} points.",
+            "insufficient": "Insufficient balance. You have {balance} points.",
+            "cooldown": "Wait {seconds}s before betting again.",
+            "slots": {
+                "win": "🎰 {reels} | You won {win} points ({net}).",
+                "lose": "🎰 {reels} | Not this time.",
+                "jackpot": "🎰 {reels} | JACKPOT! {jackpot} points in the pot. Won {win} ({net}).",
+                "cardTitle": "Slots",
+                "cardBet": "Bet",
+                "cardWin": "Win",
+                "cardNet": "Net",
+                "cardJackpot": "Jackpot"
+            },
+            "roulette": {
+                "usageMessage": "Usage: !casino roulette <bet> <red|black|green>",
+                "win": "🎡 {choice} vs {result} ({number}) — won {win} ({net}).",
+                "lose": "🎡 {choice} vs {result} ({number}) — lost.",
+                "color": {
+                    "red": "red",
+                    "black": "black",
+                    "green": "green"
+                },
+                "cardTitle": "Roulette",
+                "cardBet": "Bet",
+                "cardWin": "Win",
+                "cardNet": "Net",
+                "cardPick": "Pick",
+                "cardResult": "Result"
+            },
+            "dice": {
+                "usageMessage": "Usage: !casino dice <bet> <number> (1-{sides})",
+                "win": "🎲 Rolled {roll}, you picked {guess} — won {win} ({net}).",
+                "lose": "🎲 Rolled {roll}, you picked {guess} — lost."
+            }
+        },
+        "daily": {
+            "description": "Claim the daily reward.",
+            "usage": "!daily",
+            "disabled": "Economy is disabled.",
+            "noUser": "Could not identify you.",
+            "unavailable": "Daily reward unavailable.",
+            "cooldown": "Come back in {remaining}.",
+            "claimed": "You received {amount} points. Streak: {streak}."
+        },
+        "shop": {
+            "description": "Show the points shop.",
+            "usage": "!shop",
+            "disabled": "Economy is disabled.",
+            "empty": "The shop is empty.",
+            "list": "Shop: {items}",
+            "line": "[{key}] {name} — {price} points{description}"
+        },
+        "buy": {
+            "description": "Buy a shop item.",
+            "usage": "!buy <item>",
+            "usageMessage": "Usage: !buy <item>",
+            "disabled": "Economy is disabled.",
+            "noUser": "Could not identify you.",
+            "notFound": "Item not found: {item}",
+            "alreadyOwned": "You already bought: {item}",
+            "invalidItem": "Invalid item.",
+            "insufficient": "Insufficient balance. You have {balance} points.",
+            "noPermission": "I don't have permission to move the waitlist.",
+            "notInQueue": "You're not in the waitlist.",
+            "noMove": "No movement is possible right now.",
+            "success": "Purchase complete: {item}{extra}.",
+            "failed": "Failed to apply purchase: {error}"
+        },
+        "work": {
+            "description": "Daily work system.",
+            "usage": "!work <list|choose|claim|status>",
+            "usageMessage": "Usage: !work <list|choose|claim|status>",
+            "disabled": "Economy is disabled.",
+            "noUser": "Could not identify you.",
+            "empty": "No jobs configured.",
+            "noJob": "You have not chosen a job yet.",
+            "ready": "ready",
+            "status": "Job: {job} | Pay: {pay} points | Next: {remaining}",
+            "available": "available",
+            "locked": "locked",
+            "list": "Jobs: {items}",
+            "listLine": "[{key}] {name} (XP {xp}) — {pay} points [{status}]",
+            "chooseUsage": "Usage: !work choose <job>",
+            "jobNotFound": "Job not found: {job}",
+            "jobLocked": "{job} requires XP {xp}.",
+            "alreadySelected": "You already have this job.",
+            "upgradeOnly": "You can only switch to a higher-level job.",
+            "selected": "Job selected: {job}.",
+            "cooldown": "Come back in {remaining}.",
+            "claimed": "Pay received ({job}): {pay} points."
+        },
+        "steal": {
+            "description": "Try to steal points from someone.",
+            "usage": "!steal <user>",
+            "usageMessage": "Usage: !steal <user>",
+            "disabled": "Steal is disabled.",
+            "noUser": "Could not identify you.",
+            "userNotFound": "User not found: {user}",
+            "cannotTargetBot": "I cannot steal from the bot.",
+            "self": "You cannot steal from yourself.",
+            "targetPoor": "{user} does not have enough points to steal.",
+            "success": "You stole {amount} points from {user}.",
+            "failed": "The steal failed.",
+            "bailPaid": "You were caught and paid {amount} points bail.",
+            "noPermission": "No bail and no permission to mute.",
+            "muted": "You were jailed and muted for {minutes} min.",
+            "muteReason": "Failed steal",
+            "muteFailed": "Failed to mute: {error}"
+        },
+        "voteskip": {
+            "description": "Start a vote to skip the current track.",
+            "usage": "!voteskip",
+            "disabled": "Votekip is disabled.",
+            "noUser": "Could not identify you.",
+            "noTrack": "No track playing.",
+            "expired": "Vote ended without enough votes.",
+            "alreadyVoted": "You already voted.",
+            "started": "Vote started ({votes}/{needed}, active {active}). {seconds}s left.",
+            "voted": "Vote recorded ({votes}/{needed}, active {active}).",
+            "passed": "Enough votes! Skipping the track...",
+            "failed": "Could not skip the track.",
+            "noPermission": "I need the bouncer role to skip tracks."
+        },
+        "hack": {
+            "description": "Fake hack a user.",
+            "usage": "!hack <user>",
+            "usageMessage": "Usage: !hack <user>",
+            "lines": [
+                "🔓 Hacking {target}...",
+                "📂 Searching files...",
+                "💳 Card found...",
+                "❌ Just kidding 😂"
+            ]
+        },
+        "virus": {
+            "description": "Launch a fake virus.",
+            "usage": "!virus",
+            "lines": [
+                "🦠 Preparing virus...",
+                "📡 Sending to the network...",
+                "⚠️ System unstable...",
+                "✅ Just kidding!"
+            ]
+        },
+        "summon": {
+            "description": "Summon something mysterious.",
+            "usage": "!summon",
+            "lines": [
+                "✨ Opening the portal...",
+                "🔮 Energy is building...",
+                "⚡ Something has been summoned!"
+            ]
+        },
+        "explode": {
+            "description": "Fake explosion effect.",
+            "usage": "!explode",
+            "lines": [
+                "💥 Loading explosives...",
+                "💣 Countdown started...",
+                "💥 BOOM!"
+            ]
+        },
+        "fakeban": {
+            "description": "Fake ban a user.",
+            "usage": "!fakeban <user>",
+            "usageMessage": "Usage: !fakeban <user>",
+            "lines": [
+                "🚨 {target} was reported...",
+                "⛔ Banning {target}...",
+                "✅ Just kidding, {target} is safe!"
+            ]
         }
     },
     "events": {
@@ -559,6 +981,18 @@
         },
         "greet": {
             "description": "Sends a welcome message when a user joins."
+        },
+        "economyChat": {
+            "description": "Rewards for chat activity."
+        },
+        "economyDj": {
+            "description": "Rewards DJs for playing tracks."
+        },
+        "economyVote": {
+            "description": "Rewards woot votes."
+        },
+        "economyGrab": {
+            "description": "Rewards grabs."
         },
         "timeGuard": {
             "description": "Skips tracks longer than the configured limit.",
