@@ -990,6 +990,9 @@
         "greet": {
             "description": "Envia uma mensagem de boas-vindas quando um usuário entra."
         },
+        "keywordReply": {
+            "description": "Responde automaticamente a palavras-chave configuradas no chat."
+        },
         "economyChat": {
             "description": "Recompensas por mensagens no chat."
         },

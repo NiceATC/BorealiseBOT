@@ -13,6 +13,29 @@
     "autoWoot": true,
     "botMessage": "Hi! I'm a bot and cannot chat. Use !help to see what I can do!",
     "botMentionCooldownMs": 30000,
+    "chatKeywordReplyEnabled": false,
+    "chatKeywordReplyCooldownMs": 3000,
+    "chatKeywordReplySameReplyCooldownMs": 86400000,
+    "chatKeywordReplyRules": [
+        {
+            "keyword": [
+                "oi",
+                "oie",
+                "ola",
+                "olá"
+            ],
+            "mode": 1,
+            "reply": [
+                "Oi, tudo bem?",
+                "Opa! Seja bem-vindo(a)."
+            ]
+        },
+        {
+            "keyword": "boa noite",
+            "mode": 0,
+            "reply": "Boa noite, pessoal!"
+        }
+    ],
     "greetEnabled": true,
     "greetMessage": "Welcome to the room, @{name}!",
     "greetBackMessage": "Welcome back, @{name}!",

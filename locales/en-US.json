@@ -990,6 +990,9 @@
         "greet": {
             "description": "Sends a welcome message when a user joins."
         },
+        "keywordReply": {
+            "description": "Automatically replies to configured chat keywords."
+        },
         "economyChat": {
             "description": "Rewards for chat activity."
         },
