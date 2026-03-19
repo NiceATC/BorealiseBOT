@@ -19,7 +19,8 @@
         "uncaughtException": "[index] Exceção não tratada: {error}",
         "unhandledRejection": "[index] Rejeição não tratada: {error}",
         "initFailed": "[index] Falha ao iniciar o bot: {error}",
-        "mainFailed": "[index] Falha inesperada: {error}"
+        "mainFailed": "[index] Falha inesperada: {error}",
+        "dashboardFailed": "[index] Falha ao iniciar o dashboard: {error}"
     },
     "config": {
         "envMissing": "[config] .env não encontrado em {path}\n         Copie .env.example para .env e preencha suas credenciais.",
@@ -48,7 +49,8 @@
             "usageLine": "Uso: {usage}",
             "aliasesLine": "Aliases: {aliases}",
             "requirementLine": "Cargo exigido: {role}",
-            "list": "Comandos: {list}"
+            "list": "Comandos: {list}",
+            "dashboard": "Veja os comandos no dashboard: {url}"
         },
         "ping": {
             "description": "Verifica se o bot está online.",
@@ -1063,6 +1065,180 @@
                 "{name} foi removido da fila!",
                 "{name} está fora da fila!"
             ]
+        }
+    },
+    "dashboard": {
+        "title": "Painel BorealiseBOT",
+        "subtitle": "Apoio em tempo real para o bot e a sala.",
+        "nav": {
+            "home": "Dashboard",
+            "admin": "Admin",
+            "ranking": "Ranking",
+            "commands": "Comandos",
+            "autowoot": "AutoWoot"
+        },
+        "auth": {
+            "title": "Acesso ao painel",
+            "passwordLabel": "Senha",
+            "passwordPlaceholder": "Digite a senha",
+            "login": "Entrar",
+            "logout": "Sair",
+            "invalidPassword": "Senha invalida.",
+            "missingPassword": "Senha do painel nao configurada."
+        },
+        "room": {
+            "title": "Sala",
+            "open": "Abrir sala",
+            "missing": "Link da sala nao configurado."
+        },
+        "stats": {
+            "title": "Estatisticas",
+            "uptime": "Uptime",
+            "usersOnline": "Usuarios online",
+            "currentTrack": "Musica atual",
+            "dj": "DJ",
+            "reactions": "Reacoes",
+            "waitlist": "Fila",
+            "nextDj": "Proximo DJ",
+            "commandsLoaded": "Comandos carregados",
+            "eventsLoaded": "Eventos carregados",
+            "status": "Status",
+            "paused": "Pausado",
+            "running": "Ativo",
+            "empty": "-"
+        },
+        "rankings": {
+            "title": "Rankings",
+            "subtitle": "Top usuarios e musicas do bot.",
+            "economy": "Pontos",
+            "xp": "XP",
+            "woots": "Woots",
+            "djs": "Top DJs",
+            "songs": "Top musicas",
+            "user": "Usuario",
+            "points": "Pontos",
+            "level": "Nivel",
+            "plays": "Plays",
+            "track": "Musica"
+        },
+        "commands": {
+            "title": "Comandos",
+            "subtitle": "Veja todos os comandos e seus cooldowns.",
+            "searchPlaceholder": "Buscar comando, alias ou descricao...",
+            "category": "Categoria",
+            "command": "Comando",
+            "aliases": "Aliases",
+            "description": "Descricao",
+            "usage": "Uso",
+            "cooldown": "Cooldown",
+            "minRole": "Cargo minimo",
+            "copy": "Copiar",
+            "copyUsage": "Copiar uso",
+            "copied": "Copiado",
+            "noResults": "Nenhum comando encontrado."
+        },
+        "footer": {
+            "madeWith": "Feito com",
+            "by": "por",
+            "github": "GitHub"
+        },
+        "config": {
+            "title": "Configuracoes do bot",
+            "subtitle": "Edite apenas chaves seguras. Valores complexos devem ser JSON.",
+            "key": "Chave",
+            "value": "Valor",
+            "save": "Salvar configuracoes",
+            "saved": "Configuracoes salvas.",
+            "invalidJson": "JSON invalido.",
+            "restart": "Algumas mudancas exigem reinicio do bot."
+        },
+        "editor": {
+            "title": "Editor de Arquivos",
+            "type": "Tipo",
+            "commands": "Comandos",
+            "events": "Eventos",
+            "files": "Arquivos",
+            "load": "Carregar",
+            "save": "Salvar",
+            "create": "Criar",
+            "path": "Caminho",
+            "pathPlaceholder": "categoria/novo-comando.js",
+            "saved": "Arquivo salvo.",
+            "created": "Arquivo criado.",
+            "disabled": "Edicao de arquivos desativada no servidor."
+        },
+        "admin": {
+            "title": "Admin",
+            "subtitle": "Controle e manutencao do bot.",
+            "overview": "Visao geral",
+            "actions": "Acoes rapidas",
+            "pause": "Pausar",
+            "resume": "Retomar",
+            "reload": "Recarregar bot",
+            "reloadCommands": "Recarregar comandos",
+            "reloadEvents": "Recarregar eventos",
+            "theme": {
+                "title": "Tema",
+                "subtitle": "Customize a paleta do painel com qualquer cor CSS.",
+                "bg": "Fundo",
+                "surface": "Superficie",
+                "surfaceStrong": "Superficie forte",
+                "ink": "Texto",
+                "muted": "Texto secundario",
+                "accent": "Destaque",
+                "accent2": "Destaque 2",
+                "accent3": "Destaque 3",
+                "accent4": "Destaque 4",
+                "stroke": "Bordas",
+                "valuePlaceholder": "ex: #ff6b2d ou rgba(255, 107, 45, 0.2)",
+                "reset": "Resetar para o padrao",
+                "save": "Salvar tema",
+                "saved": "Tema salvo."
+            },
+            "console": {
+                "title": "Console",
+                "logs": "Logs",
+                "start": "Iniciar",
+                "stop": "Parar",
+                "restart": "Reiniciar",
+                "reloadCommands": "Recarregar comandos",
+                "reloadEvents": "Recarregar eventos",
+                "system": "Saude do sistema",
+                "cpu": "Carga da CPU",
+                "memory": "Memoria",
+                "disk": "Disco",
+                "network": "Rede",
+                "ping": "Ping",
+                "empty": "Sem logs ainda.",
+                "clear": "Limpar"
+            },
+            "i18n": {
+                "title": "Editor de traducoes",
+                "selectLocale": "Selecionar idioma",
+                "load": "Carregar",
+                "save": "Salvar",
+                "saved": "Traducoes salvas.",
+                "invalidJson": "JSON invalido."
+            },
+            "db": {
+                "title": "Banco de dados",
+                "tables": "Tabelas",
+                "loadTable": "Carregar tabela",
+                "noTable": "Selecione uma tabela.",
+                "columns": "Colunas",
+                "rows": "Linhas",
+                "searchPlaceholder": "Filtrar linhas...",
+                "showSql": "Mostrar SQL",
+                "hideSql": "Ocultar SQL",
+                "sql": "SQL",
+                "execute": "Executar",
+                "sqlDisabled": "Execucao de SQL desativada no servidor."
+            }
+        },
+        "errors": {
+            "unauthorized": "Nao autorizado.",
+            "network": "Falha de rede.",
+            "unknown": "Erro inesperado."
         }
     },
     "logs": {

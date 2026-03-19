@@ -141,8 +141,16 @@ export class EventRegistry {
       }
 
       const defs = Array.isArray(exported) ? exported : [exported];
+      const relNormalized = rel.split(path.sep).join("/");
+      const category = relNormalized.includes("/")
+        ? relNormalized.split("/")[0]
+        : "root";
       for (const def of defs) {
         try {
+          if (def && typeof def === "object") {
+            def.__file = relNormalized;
+            def.__category = category;
+          }
           this.register(def);
           summary.loaded++;
         } catch (err) {
@@ -183,6 +191,16 @@ export class EventRegistry {
    */
   getHandler(name) {
     return this._handlers.get(name.toLowerCase()) ?? null;
+  }
+
+  /** Returns all registered handlers (no enable filter). */
+  get all() {
+    return [...this._handlers.values()];
+  }
+
+  /** Number of registered handlers. */
+  get count() {
+    return this._handlers.size;
   }
 
   /**

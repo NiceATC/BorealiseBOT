@@ -19,7 +19,8 @@
         "uncaughtException": "[index] Uncaught exception: {error}",
         "unhandledRejection": "[index] Unhandled rejection: {error}",
         "initFailed": "[index] Bot initialization failed: {error}",
-        "mainFailed": "[index] Unexpected failure: {error}"
+        "mainFailed": "[index] Unexpected failure: {error}",
+        "dashboardFailed": "[index] Failed to start dashboard: {error}"
     },
     "config": {
         "envMissing": "[config] .env not found at {path}\n         Copy .env.example to .env and fill in your credentials.",
@@ -48,7 +49,8 @@
             "usageLine": "Usage: {usage}",
             "aliasesLine": "Aliases: {aliases}",
             "requirementLine": "Required role: {role}",
-            "list": "Commands: {list}"
+            "list": "Commands: {list}",
+            "dashboard": "See commands in the dashboard: {url}"
         },
         "ping": {
             "description": "Check if the bot is alive.",
@@ -1060,9 +1062,183 @@
             ],
             "shotLines": [
                 "{name} got blasted and left the queue!",
-                "{name} is out of the queue!",
-                "{name} was removed from the queue!"
+                "{name} was removed from the queue!",
+                "{name} is out of the queue!"
             ]
+        }
+    },
+    "dashboard": {
+        "title": "BorealiseBOT Dashboard",
+        "subtitle": "Real-time support for the bot and the room.",
+        "nav": {
+            "home": "Dashboard",
+            "admin": "Admin",
+            "ranking": "Ranking",
+            "commands": "Commands",
+            "autowoot": "AutoWoot"
+        },
+        "auth": {
+            "title": "Dashboard access",
+            "passwordLabel": "Password",
+            "passwordPlaceholder": "Enter the password",
+            "login": "Sign in",
+            "logout": "Sign out",
+            "invalidPassword": "Invalid password.",
+            "missingPassword": "Dashboard password is not configured."
+        },
+        "room": {
+            "title": "Room",
+            "open": "Open room",
+            "missing": "Room link is not configured."
+        },
+        "stats": {
+            "title": "Stats",
+            "uptime": "Uptime",
+            "usersOnline": "Users online",
+            "currentTrack": "Current track",
+            "dj": "DJ",
+            "reactions": "Reactions",
+            "waitlist": "Waitlist",
+            "nextDj": "Next DJ",
+            "commandsLoaded": "Commands loaded",
+            "eventsLoaded": "Events loaded",
+            "status": "Status",
+            "paused": "Paused",
+            "running": "Running",
+            "empty": "-"
+        },
+        "rankings": {
+            "title": "Rankings",
+            "subtitle": "Top users and tracks from the bot.",
+            "economy": "Points",
+            "xp": "XP",
+            "woots": "Woots",
+            "djs": "Top DJs",
+            "songs": "Top songs",
+            "user": "User",
+            "points": "Points",
+            "level": "Level",
+            "plays": "Plays",
+            "track": "Track"
+        },
+        "commands": {
+            "title": "Commands",
+            "subtitle": "Browse every command and its cooldown.",
+            "searchPlaceholder": "Search command, alias, or description...",
+            "category": "Category",
+            "command": "Command",
+            "aliases": "Aliases",
+            "description": "Description",
+            "usage": "Usage",
+            "cooldown": "Cooldown",
+            "minRole": "Min role",
+            "copy": "Copy",
+            "copyUsage": "Copy usage",
+            "copied": "Copied",
+            "noResults": "No commands found."
+        },
+        "footer": {
+            "madeWith": "Made with",
+            "by": "by",
+            "github": "GitHub"
+        },
+        "config": {
+            "title": "Bot settings",
+            "subtitle": "Edit only safe keys. Complex values must be JSON.",
+            "key": "Key",
+            "value": "Value",
+            "save": "Save settings",
+            "saved": "Settings saved.",
+            "invalidJson": "Invalid JSON.",
+            "restart": "Some changes require a bot restart."
+        },
+        "editor": {
+            "title": "Files Editor",
+            "type": "Type",
+            "commands": "Commands",
+            "events": "Events",
+            "files": "Files",
+            "load": "Load",
+            "save": "Save",
+            "create": "Create",
+            "path": "Path",
+            "pathPlaceholder": "category/new-command.js",
+            "saved": "File saved.",
+            "created": "File created.",
+            "disabled": "File editing is disabled on the server."
+        },
+        "admin": {
+            "title": "Admin",
+            "subtitle": "Control and maintain the bot.",
+            "overview": "Overview",
+            "actions": "Quick actions",
+            "pause": "Pause",
+            "resume": "Resume",
+            "reload": "Reload bot",
+            "reloadCommands": "Reload commands",
+            "reloadEvents": "Reload events",
+            "theme": {
+                "title": "Theme",
+                "subtitle": "Customize the dashboard palette with any CSS color.",
+                "bg": "Background",
+                "surface": "Surface",
+                "surfaceStrong": "Surface strong",
+                "ink": "Text",
+                "muted": "Muted text",
+                "accent": "Accent",
+                "accent2": "Accent 2",
+                "accent3": "Accent 3",
+                "accent4": "Accent 4",
+                "stroke": "Borders",
+                "valuePlaceholder": "e.g. #ff6b2d or rgba(255, 107, 45, 0.2)",
+                "reset": "Reset to default",
+                "save": "Save theme",
+                "saved": "Theme saved."
+            },
+            "console": {
+                "title": "Console",
+                "logs": "Logs",
+                "start": "Start",
+                "stop": "Stop",
+                "restart": "Restart",
+                "reloadCommands": "Reload commands",
+                "reloadEvents": "Reload events",
+                "system": "System health",
+                "cpu": "CPU load",
+                "memory": "Memory",
+                "disk": "Disk",
+                "network": "Network",
+                "ping": "Ping",
+                "empty": "No logs yet.",
+                "clear": "Clear"
+            },
+            "i18n": {
+                "title": "Translation editor",
+                "selectLocale": "Select locale",
+                "load": "Load",
+                "save": "Save",
+                "saved": "Translations saved.",
+                "invalidJson": "Invalid JSON."
+            },
+            "db": {
+                "title": "Database",
+                "tables": "Tables",
+                "loadTable": "Load table",
+                "noTable": "Select a table.",
+                "columns": "Columns",
+                "rows": "Rows",
+                "searchPlaceholder": "Filter rows...",
+                "showSql": "Show SQL",
+                "hideSql": "Hide SQL",
+                "sql": "SQL",
+                "execute": "Execute",
+                "sqlDisabled": "SQL execution is disabled on the server."
+            }
+        },
+        "errors": {
+            "unauthorized": "Unauthorized.",
+            "network": "Network error.",
+            "unknown": "Unexpected error."
         }
     },
     "logs": {

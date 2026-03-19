@@ -8,6 +8,14 @@
 import { ROLE_LEVELS } from "../../lib/permissions.js";
 import { sendChatChunks } from "../../helpers/chat.js";
 
+const dashboardEnabled = ["true", "1", "yes"].includes(
+  String(process.env.DASHBOARD_ENABLED ?? "")
+    .trim()
+    .toLowerCase(),
+);
+const dashboardUrl = String(process.env.DASHBOARD_PUBLIC_URL ?? "").trim();
+const dashboardPort = Number(process.env.DASHBOARD_PORT) || 3000;
+
 export default {
   name: "help",
   aliases: ["comandos", "commands", "ajuda"],
@@ -22,6 +30,12 @@ export default {
       cmd.descriptionKey ? t(cmd.descriptionKey) : (cmd.description ?? "");
     const getUsage = (cmd) =>
       cmd.usageKey ? t(cmd.usageKey) : (cmd.usage ?? "");
+
+    if (dashboardEnabled) {
+      const url = dashboardUrl || `http://localhost:${dashboardPort}`;
+      await reply(t("commands.help.dashboard", { url }));
+      return;
+    }
 
     if (args.length > 0) {
       // Detailed help for one command

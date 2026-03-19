@@ -1,6 +1,20 @@
 {
     "_comment": "Copy this file to config.json and adjust the values. Keep secrets (email/password) in .env",
     "room": "mib",
+    "roomUrl": "https://borealise.com/room/{room}",
+    "autowootUrl": "",
+    "dashboardTheme": {
+        "bg": "#f4f1ea",
+        "surface": "#ffffff",
+        "surfaceStrong": "#ffffff",
+        "ink": "#66686b",
+        "muted": "#6b7280",
+        "accent": "#ff5d3a",
+        "accent2": "#0ea5a3",
+        "accent3": "#f59e0b",
+        "accent4": "#2563eb",
+        "stroke": "rgba(28, 32, 40, 0.12)"
+    },
     "locale": "pt-BR",
     "apiUrl": "https://prod.borealise.com/api",
     "wsUrl": "wss://prod.borealise.com/ws",

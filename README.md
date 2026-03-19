@@ -24,8 +24,52 @@ cp .env.example .env
 npm start
 
 # Auto-restart on file changes (Node ≥ 18)
+# Also starts the dashboard UI
 npm run dev
 ```
+
+---
+
+## Dashboard (Next.js)
+
+The dashboard lives in the `dashboard/` folder and talks to the bot's built-in
+HTTP/WebSocket server.
+
+1. Add the dashboard settings to `.env`:
+
+```bash
+DASHBOARD_ENABLED=true
+DASHBOARD_BIND=127.0.0.1
+DASHBOARD_PASSWORD=change_me
+DASHBOARD_API_KEY=change_me_too
+DASHBOARD_JWT_SECRET=change_me_super_secret
+DASHBOARD_PUBLIC_URL=http://localhost:3000
+DASHBOARD_PORT=3100
+DASHBOARD_ALLOWED_ORIGINS=http://localhost:3000
+```
+
+Optional: enable raw SQL execution in the admin DB editor with
+`DASHBOARD_ALLOW_SQL=true`.
+
+Optional: enable command/event file editing with
+`DASHBOARD_ALLOW_FILE_EDIT=true`.
+
+2. Install and run the dashboard:
+
+```bash
+cd dashboard
+npm install
+npm run dev
+```
+
+If you run the dashboard from another host or port, copy `dashboard/.env.example`
+to `dashboard/.env.local` and set `NEXT_PUBLIC_DASHBOARD_API` accordingly.
+Make sure `NEXT_PUBLIC_DASHBOARD_API_KEY` matches `DASHBOARD_API_KEY`.
+
+3. Open the UI at `http://localhost:3000` and log in with the password.
+
+When `DASHBOARD_ENABLED=true`, the `!help` command replies with
+`DASHBOARD_PUBLIC_URL` instead of printing the command list in chat.
 
 ---
 
@@ -259,6 +303,7 @@ Defaults below are from `config.example.json`.
 | Key                                 | Default                                | Description                                            |
 | ----------------------------------- | -------------------------------------- | ------------------------------------------------------ |
 | `room`                              | _(required)_                           | Room slug to join                                      |
+| `roomUrl`                           | `https://borealise.com/room/{room}`    | Room link template used by the dashboard               |
 | `locale`                            | `pt-BR`                                | Default locale (`pt-BR` or `en-US`)                    |
 | `apiUrl`                            | `https://prod.borealise.com/api`       | REST API base URL                                      |
 | `wsUrl`                             | `wss://prod.borealise.com/ws`          | WebSocket pipeline URL                                 |

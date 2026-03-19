@@ -123,8 +123,16 @@ export class CommandRegistry {
 
       // Support both single-command export and array-of-commands export
       const cmds = Array.isArray(exported) ? exported : [exported];
+      const relNormalized = rel.split(path.sep).join("/");
+      const category = relNormalized.includes("/")
+        ? relNormalized.split("/")[0]
+        : "root";
       for (const cmd of cmds) {
         try {
+          if (cmd && typeof cmd === "object") {
+            cmd.__file = relNormalized;
+            cmd.__category = category;
+          }
           this.register(cmd);
           summary.loaded++;
         } catch (err) {

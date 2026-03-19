@@ -19,9 +19,11 @@ import { isServerDownError } from "./helpers/errors.js";
 import { printBanner } from "./helpers/banner.js";
 import { BOT_VERSION } from "./lib/version.js";
 import { t as translate } from "./lib/i18n.js";
+import { startDashboardServer } from "./lib/dashboard/server.js";
 
 let bot;
 let locale;
+let dashboardServer;
 const RETRY_MS = 30_000;
 const SHUTDOWN_TIMEOUT_MS = 10_000;
 
@@ -45,6 +47,9 @@ async function shutdown(signal) {
   }, SHUTDOWN_TIMEOUT_MS);
 
   try {
+    if (dashboardServer) {
+      await dashboardServer.stop();
+    }
     if (bot) await bot.stop();
   } catch (err) {
     console.error(t("index.shutdownError", { error: err.message }));
@@ -75,6 +80,15 @@ async function main() {
     bot = new BorealiseBot(cfg);
     await bot.loadAfkState();
     await bot.loadModules();
+    try {
+      dashboardServer = await startDashboardServer(bot);
+    } catch (err) {
+      console.error(
+        t("index.dashboardFailed", {
+          error: err.message,
+        }),
+      );
+    }
   } catch (err) {
     console.error(t("index.initFailed", { error: err.message }));
     process.exit(1);

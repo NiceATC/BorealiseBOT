@@ -7,6 +7,7 @@ basicBot.js
 # Build & Distribution
 dist/
 build/
+.next/
 *.crx
 *.zip
 *.tar.gz

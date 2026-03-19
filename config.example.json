@@ -1,6 +1,9 @@
 {
     "_comment": "Copy this file to config.json and adjust the values. Keep secrets (email/password) in .env",
     "room": "room-slug",
+    "roomUrl": "https://borealise.com/room/{room}",
+    "autowootUrl": "",
+    "dashboardTheme": {},
     "locale": "en-US",
     "apiUrl": "https://prod.borealise.com/api",
     "wsUrl": "wss://prod.borealise.com/ws",
