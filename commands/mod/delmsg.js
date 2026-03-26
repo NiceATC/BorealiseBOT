@@ -1,11 +1,14 @@
 /**
  * commands/mod/delmsg.js
  *
- * Deletes all cached chat messages from a specific user.
- * Only works on messages the bot has seen since it joined.
+ * Deletes all chat messages from a specific user.
+ * Fetches the full history via the API (paginated, filtered by userId),
+ * then also purges any locally cached message IDs for that user.
  *
  * Usage: !delmsg @user
  */
+
+const BATCH_SIZE = 50;
 
 const delmsg = {
   name: "delmsg",
@@ -16,7 +19,7 @@ const delmsg = {
   minRole: "bouncer",
 
   async execute(ctx) {
-    const { bot, args, reply, t } = ctx;
+    const { bot, api, args, reply, t } = ctx;
     const target = (args[0] ?? "").replace(/^@/, "").trim();
     if (!target) {
       await reply(t("commands.delmsg.usageMessage"));
@@ -34,7 +37,57 @@ const delmsg = {
       return;
     }
 
-    const count = bot.deleteMessagesFromUser(user.userId);
+    const targetId = String(user.userId);
+    let count = 0;
+
+    // ── Fetch & delete via API history (filtered by userId) ──────────────────
+    if (api?.chat?.getMessages && api?.chat?.deleteMessage) {
+      let before = undefined;
+      let hasMore = true;
+
+      while (hasMore) {
+        let res;
+        try {
+          res = await api.chat.getMessages(bot.cfg.room, before, BATCH_SIZE);
+        } catch {
+          break;
+        }
+
+        const inner = res?.data?.data ?? res?.data ?? {};
+        const messages = Array.isArray(inner)
+          ? inner
+          : (inner.messages ?? inner.data ?? []);
+
+        if (!messages.length) break;
+
+        for (const msg of messages) {
+          const msgUserId = String(
+            msg?.userId ?? msg?.user_id ?? msg?.sender?.id ?? "",
+          );
+          const id = msg?.id ?? msg?.messageId ?? msg?.message_id;
+          if (!id || msgUserId !== targetId) continue;
+          try {
+            await api.chat.deleteMessage(bot.cfg.room, id);
+            count++;
+          } catch {
+            // best-effort — keep going
+          }
+        }
+
+        if (messages.length < BATCH_SIZE) {
+          hasMore = false;
+        } else {
+          const last = messages[messages.length - 1];
+          before = last?.id ?? last?.messageId ?? last?.message_id;
+          if (!before) hasMore = false;
+        }
+      }
+    }
+
+    // ── Also purge locally cached message IDs ────────────────────────────────
+    const cached = bot.deleteMessagesFromUser(targetId);
+    if (!api?.chat?.getMessages) count += cached;
+
     await reply(
       t("commands.delmsg.done", {
         user: user.displayName ?? user.username,
