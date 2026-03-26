@@ -61,8 +61,17 @@ async function resolveDuel(bot, api, pending) {
     }),
   );
 
+  const minutes = getMuteMinutes(bot);
+
   if (!api?.room?.mute) {
     await bot.sendChat(bot.t("commands.duel.muteUnavailable"));
+    bot.startAutoDeletingUser(loser.id, minutes * 60_000);
+    await bot.sendChat(
+      bot.t("commands.duel.deleteMessagesFallback", {
+        user: loserTag,
+        minutes,
+      }),
+    );
     return;
   }
 
@@ -72,10 +81,16 @@ async function resolveDuel(bot, api, pending) {
         user: loserTag,
       }),
     );
+    bot.startAutoDeletingUser(loser.id, minutes * 60_000);
+    await bot.sendChat(
+      bot.t("commands.duel.deleteMessagesFallback", {
+        user: loserTag,
+        minutes,
+      }),
+    );
     return;
   }
 
-  const minutes = getMuteMinutes(bot);
   try {
     await api.room.mute(bot.cfg.room, Number(loser.id), {
       duration: minutes,
@@ -92,6 +107,13 @@ async function resolveDuel(bot, api, pending) {
       bot.t("commands.duel.muteFailed", {
         user: loserTag,
         error: err.message,
+      }),
+    );
+    bot.startAutoDeletingUser(loser.id, minutes * 60_000);
+    await bot.sendChat(
+      bot.t("commands.duel.deleteMessagesFallback", {
+        user: loserTag,
+        minutes,
       }),
     );
   }

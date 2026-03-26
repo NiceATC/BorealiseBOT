@@ -65,23 +65,45 @@ export default {
     }
 
     const isReturning = greetedCount > 0;
-    let base = isReturning ? bot.cfg.greetBackMessage : bot.cfg.greetMessage;
-    let template = String(bot.localizeValue(base) ?? "")
-      .replace(/{name}/g, display)
-      .replace(/{username}/g, username ?? display)
-      .trim();
 
-    if (!template && isReturning) {
-      base = bot.cfg.greetMessage;
-      template = String(bot.localizeValue(base) ?? "")
+    // Resolve template: prefer array (random pick), fall back to single string
+    function resolveGreetTemplate(bot, isReturning, display, username) {
+      const arrKey = isReturning ? "greetBackMessages" : "greetMessages";
+      const singleKey = isReturning ? "greetBackMessage" : "greetMessage";
+
+      let base;
+      const arr = bot.cfg[arrKey];
+      if (Array.isArray(arr) && arr.length > 0) {
+        base = arr[Math.floor(Math.random() * arr.length)];
+      } else {
+        base = bot.cfg[singleKey];
+      }
+
+      const resolved = String(bot.localizeValue(base) ?? "");
+      const template = resolved
         .replace(/{name}/g, display)
         .replace(/{username}/g, username ?? display)
         .trim();
+
+      return template;
+    }
+
+    let template = resolveGreetTemplate(bot, isReturning, display, username);
+
+    if (!template && isReturning) {
+      template = resolveGreetTemplate(bot, false, display, username);
     }
 
     if (!template) return;
 
-    await reply(template);
+    const res = await reply(template);
+    const sentMsg = res?.data?.data?.message ?? res?.data?.message ?? null;
+    const sentId = sentMsg?.id ?? res?.data?.data?.id ?? res?.data?.id ?? null;
+    const deleteMs = Number(bot.cfg.greetDeleteMs) || 0;
+    if (sentId && deleteMs > 0) {
+      bot.scheduleMessageDelete(sentId, deleteMs);
+    }
+
     await upsertGreetState({
       userId,
       greetedAt: Date.now(),

@@ -265,6 +265,24 @@
             "reason": "motivo: {reason}",
             "error": "Falha ao banir: {error}"
         },
+        "nuke": {
+            "description": "Apaga todas as mensagens em cache da sala.",
+            "usage": "!nuke",
+            "done": "{count} mensagem(ns) apagada(s)."
+        },
+        "delmsg": {
+            "description": "Apaga todas as mensagens em cache de um usuário.",
+            "usage": "!delmsg <usuario>",
+            "usageMessage": "Uso: !delmsg <usuario>",
+            "userNotFound": "Usuário não encontrado: {user}",
+            "done": "{count} mensagem(ns) de {user} apagada(s)."
+        },
+        "lockchat": {
+            "description": "Trava o chat para que só a equipe possa falar.",
+            "usage": "!lockchat [on|off]",
+            "enabled": "Chat travado. Apenas {role}+ podem enviar mensagens.",
+            "disabled": "Chat desbloqueado."
+        },
         "unban": {
             "description": "Remove o banimento.",
             "usage": "!unban <usuario>",
@@ -597,6 +615,7 @@
             "muteUnavailable": "Mute indisponível no momento.",
             "muteRoleTooHigh": "Não posso mutar {user} (cargo alto).",
             "noPermission": "Preciso do cargo bouncer para aplicar o mute do duelo.",
+            "deleteMessagesFallback": "As mensagens de {user} serão apagadas por {minutes} min.",
             "noPending": "Não há duelo pendente.",
             "notTarget": "Este duelo não é para você.",
             "alreadyAccepted": "Este duelo já foi aceito.",

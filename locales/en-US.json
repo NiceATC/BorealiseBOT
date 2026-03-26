@@ -265,6 +265,24 @@
             "reason": "reason: {reason}",
             "error": "Failed to ban: {error}"
         },
+        "nuke": {
+            "description": "Delete all cached messages in the room.",
+            "usage": "!nuke",
+            "done": "Nuked {count} message(s)."
+        },
+        "delmsg": {
+            "description": "Delete all cached messages from a user.",
+            "usage": "!delmsg <user>",
+            "usageMessage": "Usage: !delmsg <user>",
+            "userNotFound": "User not found: {user}",
+            "done": "Deleted {count} message(s) from {user}."
+        },
+        "lockchat": {
+            "description": "Lock the chat so only staff can talk.",
+            "usage": "!lockchat [on|off]",
+            "enabled": "Chat locked. Only {role}+ can send messages.",
+            "disabled": "Chat unlocked."
+        },
         "unban": {
             "description": "Unban a user.",
             "usage": "!unban <user>",
@@ -597,6 +615,7 @@
             "muteUnavailable": "Mute is unavailable right now.",
             "muteRoleTooHigh": "I cannot mute {user} (role too high).",
             "noPermission": "I need the bouncer role to apply duel mutes.",
+            "deleteMessagesFallback": "Messages from {user} will be deleted for {minutes} min.",
             "noPending": "There is no pending duel.",
             "notTarget": "This duel is not for you.",
             "alreadyAccepted": "This duel was already accepted.",
